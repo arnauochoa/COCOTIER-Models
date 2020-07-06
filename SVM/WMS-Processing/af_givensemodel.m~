@@ -1,0 +1,26 @@
+function igpdata = af_givensemodel(t, igpdata, wrsdata, satdata, wrs2satdata,truth_data)
+% AF_GIVENSEMODEL: Computes Iono error bias and STD for IGP over ECAC from
+% IGS data
+%
+% Inputs:
+%     
+%
+% 
+% $Revision: R2020a$ 
+% $Author: Arnau Ochoa Banuelos$
+% $Date: July 6, 2020$
+%---------------------------------------------------------
+
+% Load files
+
+% Generate grid of IGP
+
+% Mean and STD generalize to any elevation
+
+% Interpolate Mean and STD
+
+% Save interpolated Mean and STD to NEW
+
+
+end
+
