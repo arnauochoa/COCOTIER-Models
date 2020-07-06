@@ -20,6 +20,12 @@
 clear all;
 close all;
 
+addpath(genpath('Data'));
+addpath(genpath('GUI'));
+addpath(genpath('Output'));
+addpath(genpath('SVM'));
+addpath(genpath('Tools'));
+
 init_const;      % global physical and gps constants
 init_col_labels; % column indices 
 init_mops;       % MOPS constants
