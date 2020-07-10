@@ -1,0 +1,9 @@
+function [outputArg1,outputArg2] = init_give_nsemodel()
+%INIT_GIVE_NSEMODEL Initializes some parameters for the NSE model
+
+    global GIVE_NSE_RESULTSFILE GIVE_NSE_STATIONSFILE
+    
+    GIVE_NSE_RESULTSFILE = 'Allstations_IONO_results_full2014.mat';
+    GIVE_NSE_STATIONSFILE = 'ECAC_stations_position.mat';
+end
+

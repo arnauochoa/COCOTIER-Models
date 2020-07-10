@@ -22,6 +22,7 @@ close all;
 
 addpath(genpath('Data'));
 addpath(genpath('GUI'));
+addpath(genpath('Init'));
 addpath(genpath('Output'));
 addpath(genpath('SVM'));
 addpath(genpath('Tools'));

@@ -208,17 +208,9 @@ else   % Other non-option buttons
         if strcmp(givefun,'af_giveconst')
             GIVEI_CONST = get(GUI_GIVECONST_HNDL,'Value');
         end
-        % check give NSE model files
         if strcmp(givefun,'af_give_nsemodel')
-            if isempty(GIVE_NSE_RESULTSFILE) || isempty(GIVE_NSE_STATIONSFILE)
-                error('GIVE NSE files not defined');
-            else
-                if ~exist(GIVE_NSE_RESULTSFILE, 'file')
-                    error('GIVE NSE results file does not exist');
-                elseif ~exist(GIVE_NSE_STATIONSFILE, 'file')
-                    error('GIVE NSE stations file does not exist');
-                end
-            end
+            if isnan(GIVE_NSE_RESULTSFILE) || isnan(GIVE_NSE_STATIONSFILE)
+                
         end
         % check dual frequency
         if strcmp(GUI_GIVE_MENU{i},'Dual Freq')

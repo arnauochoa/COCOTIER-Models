@@ -1,4 +1,4 @@
-function igpdata = af_givensemodel(t, igpdata, wrsdata, satdata, wrs2satdata,truth_data)
+function igpdata = af_give_nsemodel(t, igpdata, wrsdata, satdata, wrs2satdata,truth_data)
 % AF_GIVENSEMODEL: Computes Iono error bias and STD for IGP over ECAC from
 % IGS data
 %
@@ -13,7 +13,7 @@ function igpdata = af_givensemodel(t, igpdata, wrsdata, satdata, wrs2satdata,tru
 
 global COL_IGP_LL COL_IGP_BIAS COL_IGP_STD COL_IGP_MINMON 
 global COL_IGP_GIVEI COL_IGP_UPMGIVEI
-global MOPS_GIVE MOPS_GIVEI_NM MOPS_SIG2_GIVE
+global MOPS_GIVE MOPS_GIVEI_NM MOPS_MU_GIVE MOPS_SIG_GIVE
 
 n_igp = size(igpdata,1);
 
@@ -44,11 +44,12 @@ giveBias = biasInterpolant(ll_igp(:, 1), ll_igp(:, 2));
 giveStd = stdInterpolant(ll_igp(:, 1), ll_igp(:, 2));
 
 % Generate error from bias and std
-giveErr = abs(normrnd(igpdata(:, COL_IGP_BIAS), igpdata(:, COL_IGP_STD)));
+% giveErr = abs(normrnd(giveBias, giveStd));
+giveErr = giveBias, giveStd));
 
-% % Find MOPS_GIVE intervals corresponding to GIVE values and assign index
-indBias = find(giveBias > 0 & giveBias <= MOPS_GIVE(1));
-indStd = find(giveStd > 0 & giveStd <= MOPS_GIVE(1));
+% Find MOPS_GIVE intervals corresponding to GIVE values and assign index
+indBias = find(giveBias <= MOPS_MU_GIVE(1));
+indStd = find(giveStd <= MOPS_SIG_GIVE(1));
 indErr = find(giveErr > 0 & giveErr <= MOPS_GIVE(1));
 
 if ~isempty(indBias), igpdata(indBias, COL_IGP_BIAS) = 1; end
@@ -57,9 +58,9 @@ if ~isempty(indErr)
     igpdata(indErr, [COL_IGP_GIVEI COL_IGP_UPMGIVEI]) = 1;
 end
 
-for iMOPS = 2:length(MOPS_GIVE)
-    indBias = find(giveBias > MOPS_GIVE(iMOPS-1) & giveBias <= MOPS_GIVE(iMOPS));
-    indStd = find(giveStd > MOPS_GIVE(iMOPS-1) & giveStd <= MOPS_GIVE(iMOPS));
+for iMOPS = 2:length(MOPS_GIVE)-1
+    indBias = find(giveBias > MOPS_MU_GIVE(iMOPS-1) & giveBias <= MOPS_MU_GIVE(iMOPS));
+    indStd = find(giveStd > MOPS_SIG_GIVE(iMOPS-1) & giveStd <= MOPS_SIG_GIVE(iMOPS));
     indErr = find(giveErr > MOPS_GIVE(iMOPS-1) & giveErr <= MOPS_GIVE(iMOPS));
     if ~isempty(indBias), igpdata(indBias, COL_IGP_BIAS) = iMOPS; end
     if ~isempty(indStd), igpdata(indStd, COL_IGP_STD) = iMOPS; end
@@ -67,6 +68,11 @@ for iMOPS = 2:length(MOPS_GIVE)
         igpdata(indErr, [COL_IGP_GIVEI COL_IGP_UPMGIVEI]) = iMOPS;
     end
 end
+
+indBias = find(giveBias > MOPS_MU_GIVE(iMOPS));
+indStd = find(giveStd > MOPS_SIG_GIVE(iMOPS));
+if ~isempty(indBias), igpdata(indBias, COL_IGP_BIAS) = iMOPS; end
+if ~isempty(indStd), igpdata(indStd, COL_IGP_STD) = iMOPS; end
 
 % Assign MOPS_GIVEI_NM to NaN values
 indBias = isnan(giveBias);
