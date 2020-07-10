@@ -35,6 +35,7 @@ global TRUTH_FLAG TRUTH_FILE SETTINGS_TR_FILE
 global SETTINGS_BR_HNDL SETTINGS_BR_FILE SETTINGS_BR_DAT
 global GUISET_RUN_HNDL BRAZPARAMS RTR_FLAG IPP_SPREAD_FLAG
 global MOPS_VAL MOPS_HAL MOPS_NPA_HAL
+global GIVE_NSE_RESULTSFILE GIVE_NSE_STATIONSFILE
 
 if ismember(hndl,GUI_UDREGPS_HNDL)
     gui_mexclude(GUI_UDREGPS_HNDL,hndl);
@@ -206,6 +207,10 @@ else   % Other non-option buttons
         % check give constant
         if strcmp(givefun,'af_giveconst')
             GIVEI_CONST = get(GUI_GIVECONST_HNDL,'Value');
+        end
+        if strcmp(givefun,'af_give_nsemodel')
+            if isnan(GIVE_NSE_RESULTSFILE) || isnan(GIVE_NSE_STATIONSFILE)
+                
         end
         % check dual frequency
         if strcmp(GUI_GIVE_MENU{i},'Dual Freq')

@@ -110,6 +110,7 @@ end
 for i=1:length(abv_mask)
     idx=find(trise(abv_mask(i),:)<=time);
     if ~isempty(idx)
+        
         wrs2satdata(abv_mask(i),COL_U2S_TTRACK0)=max(trise(abv_mask(i),idx));
     else    % los is has been visible since tstart-CNMP_TL3
         wrs2satdata(abv_mask(i),COL_U2S_TTRACK0)=tstart-CNMP_TL3;

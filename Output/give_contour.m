@@ -48,7 +48,7 @@ for idx = 2:MOPS_GIVEI_NM-1
     givei_map(i)=idx;
   end
 end
-  i=find(temp > 0 & temp <= MOPS_SIG2_GIVE(1));
+i=find(temp > 0 & temp <= MOPS_SIG2_GIVE(1));
 if(~isempty(i))
   givei_map(i)=1;
 end

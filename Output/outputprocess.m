@@ -14,12 +14,14 @@ function outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,...
 %
 
 %Modified Todd Walter June 28, 2007 to include VAL, HAL and PA vs. NPA mode
-global COL_USR_LL COL_USR_INBND COL_IGP_LL COL_IGP_GIVEI COL_SAT_UDREI
+global COL_USR_LL COL_USR_INBND COL_IGP_LL COL_IGP_GIVEI COL_SAT_UDREI ...
+        COL_IGP_BIAS COL_IGP_STD
 global GUI_OUT_AVAIL GUI_OUT_UDREMAP GUI_OUT_GIVEMAP ...
         GUI_OUT_UDREHIST GUI_OUT_GIVEHIST GUI_OUT_VHPL GUI_OUT_COVAVAIL
 
 global GRAPH_AVAIL_FIGNO GRAPH_VPL_FIGNO GRAPH_HPL_FIGNO
-global GRAPH_UDREMAP_FIGNO GRAPH_GIVEMAP_FIGNO
+global GRAPH_UDREMAP_FIGNO GRAPH_GIVEMAP_FIGNO ...
+        GRAPH_GIVEBIASMAP_FIGNO GRAPH_GIVESTDMAP_FIGNO
 global GRAPH_UDREHIST_FIGNO GRAPH_GIVEHIST_FIGNO GRAPH_COV_AVAIL_FIGNO
 
 init_graph;
@@ -95,12 +97,25 @@ if outputs(GUI_OUT_GIVEMAP)
         end
         give_i = sortgive(:,percentidx);
         h=figure(GRAPH_GIVEMAP_FIGNO);
-        give_contour(igp_mask, inv_igp_mask, give_i,percent);
+        give_contour(igp_mask, inv_igp_mask, give_i, percent);
         set(h,'name','GIVE MAP');
 %        text(longrid(1)+1,latgrid(1)+1,'o -  USER');
     else
         fprintf('No GIVEs were calculated\n');
     end
+    % Bias and STD plots
+    if sum(~isnan(igpdata(:, COL_IGP_BIAS))) && all(igpdata(:, COL_IGP_BIAS)) % check NaN and 0
+        h=figure(GRAPH_GIVEBIASMAP_FIGNO);
+        give_stat_contour(igp_mask, inv_igp_mask, igpdata(:, COL_IGP_BIAS), 'Bias');
+        set(h,'name','GIVE BIAS MAP');
+    end
+    if sum(~isnan(igpdata(:, COL_IGP_STD))) && all(igpdata(:, COL_IGP_STD)) % check NaN and 0
+        h=figure(GRAPH_GIVESTDMAP_FIGNO);
+        give_stat_contour(igp_mask, inv_igp_mask, igpdata(:, COL_IGP_STD), 'STD');
+        set(h,'name','GIVE STD MAP');
+    end
+    
+        
 end
 
 if outputs(GUI_OUT_UDREMAP),

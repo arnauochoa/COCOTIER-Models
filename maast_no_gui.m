@@ -16,6 +16,12 @@ function maast_no_gui()
 clearvars -global;
 close all;
 
+addpath(genpath('Data'));
+addpath(genpath('GUI'));
+addpath(genpath('Init'));
+addpath(genpath('Output'));
+addpath(genpath('SVM'));
+addpath(genpath('Tools'));
 
 init_const;      % global physical and gps constants
 init_col_labels; % column indices 

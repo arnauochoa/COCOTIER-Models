@@ -23,7 +23,7 @@ n_igp = size(igpdata,1);
 
 %return values
 %all IGPs meet the minimum monitoring requirements (used for histogram)
-igpdata(:,COL_IGP_MINMON)=repmat(1,n_igp,1);
+igpdata(:,COL_IGP_MINMON)=ones(n_igp,1);
 
 igpdata(:,[COL_IGP_GIVEI COL_IGP_UPMGIVEI])=repmat(GIVEI_CONST,n_igp,2);
 
