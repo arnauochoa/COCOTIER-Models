@@ -15,11 +15,14 @@ global MOPS_MU_GIVE MOPS_SIG_GIVE
 global GRAPH_GIVEI_COLORS
 global GRAPH_LL_WORLD GRAPH_LL_STATE
 
+% Set variables specific to each statistic
 switch statType
     case 'Bias'
         mopsStat = MOPS_MU_GIVE;
+        units = 'm';
     case 'STD'
         mopsStat = MOPS_SIG_GIVE;
+        units = 'm';
     otherwise
         error('Wrong statType');
 end
@@ -75,7 +78,7 @@ ticklabels=num2str(mopsStat', '%1.2f');
 ticklabels(MOPS_GIVEI_NM,:)=pad('NM', size(ticklabels, 2), 'both'); % Add spaces to fill
 
 clf
-bartext = statType;
+bartext = [statType ' (' units ')'];
 
 svm_contour(lx,ly,reshape(giveStat_map,length(ly),length(lx)), ...
             1:MOPS_GIVEI_NM, ticklabels, GRAPH_GIVEI_COLORS, bartext, ...

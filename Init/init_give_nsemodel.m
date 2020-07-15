@@ -1,4 +1,4 @@
-function [outputArg1,outputArg2] = init_give_nsemodel()
+function [] = init_give_nsemodel()
 %INIT_GIVE_NSEMODEL Initializes some parameters for the NSE model
 
     global GIVE_NSE_RESULTSFILE GIVE_NSE_STATIONSFILE

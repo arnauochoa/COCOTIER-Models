@@ -1,6 +1,6 @@
 function igpdata = af_give_nsemodel(t, igpdata, wrsdata, satdata, wrs2satdata,truth_data)
-% AF_GIVENSEMODEL: Returns the GIVE variances for each IGP
-%   AF_GIVENSEMODEL Returns the GIVE variances for each IGP, computed from
+% AF_GIVE_NSEMODEL: Returns the GIVE variances for each IGP
+%   AF_GIVE_NSEMODEL Returns the GIVE variances for each IGP, computed from
 %   from the mean and STD that have been obtained in real life
 %
 % Inputs:

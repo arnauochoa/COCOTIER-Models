@@ -38,14 +38,14 @@ TRUTH_FLAG = 0;
 % Algorithms
 % Menu items
 GUI_UDREGPS_MENU = {'ADD','ADDR8/9','Constant','NSE Model','Custom2'};
-GUI_UDREGEO_MENU = {'ADD','ADDR8/9','Constant','NSE Model','Custom2'};
+GUI_UDREGEO_MENU = {'ADD','ADDR8/9','Constant','Custom1','Custom2'};
 GUI_GIVE_MENU    = {'ADD','ADDR6/7','Constant','NSE Model','Dual Freq'};
 GUI_IGPMASK_MENU  = {'IOC','Release 6/7', 'Release 8/9', 'EGNOS', 'MSAS','Brazil'};
 GUI_WRSCNMP_MENU = {'ADD-DET','ADD-Agg','Custom'};
 GUI_USRCNMP_MENU = {'MOPS','AAD-A','AAD-B'};
 
 GUI_UDREGPS_ALGO = {'af_udreadd','af_udreadd2','af_udreconst',...
-                    'af_udrecustom1','af_udrecustom2'};
+                    'af_udre_nsemodel','af_udrecustom2'};
 GUI_UDREGEO_ALGO = {'af_geoadd','af_geoadd2','af_geoconst',...
                     'af_geocustom1','af_geocustom2'};
 GUI_GIVE_ALGO    = {'af_giveadd','af_giveadd1','af_giveconst',...
@@ -56,7 +56,7 @@ GUI_USRTRP_ALGO  = {'af_trpmops','af_trpadd'};
 GUI_WRSCNMP_ALGO = {'af_cnmpadd','af_cnmpagg','af_wrscnmpcustom'};
 GUI_USRCNMP_ALGO = {'af_cnmp_mops','af_cnmpaad','af_cnmpaad'};
 
-GUI_UDREGPS_INIT = {'init_udre_osp','init_udre2_osp','','',''};
+GUI_UDREGPS_INIT = {'init_udre_osp','init_udre2_osp','','init_udre_nsemodel',''};
 GUI_UDREGEO_INIT = {'init_geo_osp','init_geo2_osp','','',''};
 GUI_GIVE_INIT = {'init_give_osp','init_giveadd1_osp','','init_give_nsemodel',''};
 GUI_WRSTRP_INIT = {'init_trop_osp',''};
