@@ -30,6 +30,7 @@ addpath(genpath('Tools'));
 init_const;      % global physical and gps constants
 init_col_labels; % column indices 
 init_mops;       % MOPS constants
+init_labels
 %init_hist;       % histogram parameters
 
 % launch GUI Control Panel

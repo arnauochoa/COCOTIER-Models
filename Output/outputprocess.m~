@@ -24,7 +24,6 @@ global GRAPH_UDREMAP_FIGNO GRAPH_GIVEMAP_FIGNO
 global GRAPH_GIVEBIASMAP_FIGNO GRAPH_GIVESTDMAP_FIGNO
 global GRAPH_UIREBIASMAP_FIGNO GRAPH_UIRESTDMAP_FIGNO
 global GRAPH_UDREHIST_FIGNO GRAPH_GIVEHIST_FIGNO GRAPH_COV_AVAIL_FIGNO
-global OUTPUT_BIAS_LABEL OUTPUT_STD_LABEL
 
 init_graph;
 
@@ -111,27 +110,27 @@ if outputs(GUI_OUT_GIVEMAP)
         for iEl = 1:length(Uire.elBins)-1
             % UIRE bias
             h=figure(GRAPH_UIREBIASMAP_FIGNO(iEl));
-            uire_stat_contour(Uire.mean(:, iEl), usrdata, OUTPUT_BIAS_LABEL);
+            uire_stat_contour();
             figName = sprintf('UIRE BIAS MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
             set(h, 'name', figName);
             
             % UIRE STD
             h=figure(GRAPH_UIRESTDMAP_FIGNO(iEl));
-            uire_stat_contour(Uire.std(:, iEl), usrdata, OUTPUT_STD_LABEL);
+            uire_stat_contour();
             figName = sprintf('UIRE STD MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
             set(h, 'name', figName);
         end
     end
     
-%     % Bias and STD plots
+    % Bias and STD plots
 %     if sum(~isnan(igpdata(:, COL_IGP_BIAS))) && all(igpdata(:, COL_IGP_BIAS)) % check NaN and 0
 %         h=figure(GRAPH_GIVEBIASMAP_FIGNO);
-%         give_stat_contour(igp_mask, inv_igp_mask, igpdata(:, COL_IGP_BIAS), OUTPUT_BIAS_LABEL);
+%         give_stat_contour(igp_mask, inv_igp_mask, igpdata(:, COL_IGP_BIAS), 'Bias');
 %         set(h,'name','GIVE BIAS MAP');
 %     end
 %     if sum(~isnan(igpdata(:, COL_IGP_STD))) && all(igpdata(:, COL_IGP_STD)) % check NaN and 0
 %         h=figure(GRAPH_GIVESTDMAP_FIGNO);
-%         give_stat_contour(igp_mask, inv_igp_mask, igpdata(:, COL_IGP_STD), OUTPUT_STD_LABEL);
+%         give_stat_contour(igp_mask, inv_igp_mask, igpdata(:, COL_IGP_STD), 'STD');
 %         set(h,'name','GIVE STD MAP');
 %     end
     

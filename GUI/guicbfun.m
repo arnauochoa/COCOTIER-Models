@@ -36,6 +36,7 @@ global SETTINGS_BR_HNDL SETTINGS_BR_FILE SETTINGS_BR_DAT
 global GUISET_RUN_HNDL BRAZPARAMS RTR_FLAG IPP_SPREAD_FLAG
 global MOPS_VAL MOPS_HAL MOPS_NPA_HAL
 global GIVE_NSE_RESULTSFILE GIVE_NSE_STATIONSFILE
+global GIVE_MODE_DEFAULT GIVE_MODE_DUALFREQ GIVE_MODE_NSEMODEL
 
 if ismember(hndl,GUI_UDREGPS_HNDL)
     gui_mexclude(GUI_UDREGPS_HNDL,hndl);
@@ -222,9 +223,11 @@ else   % Other non-option buttons
         end
         % check dual frequency
         if strcmp(GUI_GIVE_MENU{i},'Dual Freq')
-            dual_freq = 1;
+            give_mode = GIVE_MODE_DUALFREQ;
+        elseif strcmp(GUI_GIVE_MENU{i},'NSE Model')
+            give_mode = GIVE_MODE_NSEMODEL;            
         else
-            dual_freq = 0;            
+            give_mode = GIVE_MODE_DEFAULT;
         end
         
     % IGP Mask Menu
@@ -360,7 +363,7 @@ else   % Other non-option buttons
             svmrun(gpsudrefun, geoudrefun, givefun, usrcnmpfun, wrsgpscnmpfun, ...
                    wrsgeocnmpfun, wrsfile,usrpolyfile, igpfile, svfile, ...
                    geodata, TStart, TEnd, TStep, usrlatstep, usrlonstep, ...
-                   outputs, percent, vhal, pa_mode, dual_freq);
+                   outputs, percent, vhal, pa_mode, give_mode);
         elseif hndl==GUI_PLOT_HNDL
             % plots only
             load 'outputs';

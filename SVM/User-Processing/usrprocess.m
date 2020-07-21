@@ -1,7 +1,8 @@
-function [vhpl, usr2satdata] = usrprocess(satdata, usrdata, igpdata, ...
-                            inv_igp_mask, usr2satdata, usrtrpfun, ...
-                            usrcnmpfun, time, pa_mode, dual_freq, ...
-                            rss_udre, rss_iono)
+function [vhpl, usr2satdata, Uire] =                               ...
+                            usrprocess(satdata, usrdata, igpdata,               ...
+                                        inv_igp_mask, usr2satdata, usrtrpfun,   ...
+                                        usrcnmpfun, time, pa_mode, give_mode,   ...
+                                        rss_udre, rss_iono)
 %*************************************************************************
 %*     Copyright c 2020 The board of trustees of the Leland Stanford     *
 %*                      Junior University. All rights reserved.          *
@@ -22,7 +23,7 @@ function [vhpl, usr2satdata] = usrprocess(satdata, usrdata, igpdata, ...
 global MOPS_SIN_USRMASK MT27 
 global COL_SAT_XYZ COL_USR_XYZ COL_USR_LL COL_SAT_UDREI COL_SAT_DEGRAD ...
         COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT  ...
-        COL_U2S_PRN COL_U2S_GXYZB COL_U2S_SIGFLT COL_U2S_SIG2UIRE ...
+        COL_U2S_PRN COL_U2S_GXYZB COL_U2S_SIGFLT COL_U2S_BIASUIRE COL_U2S_SIG2UIRE ...
         COL_U2S_OB2PP COL_U2S_SIG2TRP COL_U2S_SIG2L1MP  ...
         COL_U2S_LOSENU COL_U2S_GENUB COL_U2S_EL COL_U2S_AZ ...
         COL_U2S_IPPLL COL_U2S_TTRACK0 COL_U2S_INITNAN ...
@@ -31,6 +32,7 @@ global MOPS_SIG_UDRE MOPS_MT27_DUDRE MOPS_UDREI_NM MOPS_UDREI_DNU
 global MOPS_MIN_GEOPRN MOPS_MAX_GEOPRN
 global MOPS_UIRE_NUM MOPS_UIRE_DEN MOPS_UIRE_CONST
 global CONST_F1 CONST_F5
+global GIVE_MODE_DEFAULT GIVE_MODE_DUALFREQ GIVE_MODE_NSEMODEL
 
 nsat = size(satdata,1);
 nusr = size(usrdata,1);
@@ -52,11 +54,14 @@ usr2satdata(:,COL_U2S_GXYZB) = find_los_xyzb(usrdata(:,COL_USR_XYZ), ...
                                             satdata(:,COL_SAT_XYZ));
 usr2satdata(:,COL_U2S_GENUB) = find_los_enub(usr2satdata(:,COL_U2S_GXYZB),...
    usrdata(:,COL_USR_EHAT),usrdata(:,COL_USR_NHAT),usrdata(:,COL_USR_UHAT));
+% find inexes of satellites above mask
 abv_mask = find(-usr2satdata(:,COL_U2S_GENUB(3)) >= MOPS_SIN_USRMASK);
 
 if(~isempty(abv_mask))
+  % find elevation and azimuth of satellites above mask
   [usr2satdata(abv_mask,COL_U2S_EL),usr2satdata(abv_mask,COL_U2S_AZ)] = ...
         find_elaz(usr2satdata(abv_mask,COL_U2S_LOSENU));
+  % find IPP from user positions, elevation and azimuth for satellites above mask
   usr2satdata(abv_mask,COL_U2S_IPPLL) = find_ll_ipp(usrdata(:,COL_USR_LL),...
                                 usr2satdata(:,COL_U2S_EL),...
                                 usr2satdata(:,COL_U2S_AZ), abv_mask);
@@ -81,10 +86,13 @@ if ~isempty(usrcnmpfun)
 end
 
 % initialize outputs
-sig_flt = NaN(nlos,1);
-sig2_uire = NaN(nlos,1);
-obl2 = NaN(nlos,1);
-vhpl = NaN(nusr,2);
+sig_flt = NaN(nlos,1);      % Fast/Long-term variance
+mu_uire = NaN(nlos,1);      % User Ionospheric Range Error variance
+sig2_uire = NaN(nlos,1);    % User Ionospheric Range Error variance
+obl2 = NaN(nlos,1);         % Square of iono obliquity factor
+vhpl = NaN(nusr,2);         % Vertical and Horizontal Protection Level
+uireMean = NaN;             % UIRE mean for each user and elev from NSE Model
+uireStd = NaN;              % UIRE std for each user and elev from NSE Model
 
 [t1, t2]=meshgrid(1:nusr,1:nsat);
 usridx=reshape(t1,nlos,1);
@@ -115,6 +123,7 @@ good_udre = find((sig_udre(satidx(abv_mask)) > 0) | ...
 if(~isempty(good_udre))
     good_sat=abv_mask(good_udre);
     
+    % ==== UDRE ====
     %Apply Message Type 27 dUDRE values if broadcast 
     if ~isempty(MT27)
         %MT27 message
@@ -148,63 +157,99 @@ if(~isempty(good_udre))
                                     sig_udre, mt28_cov, mt28_sf);
     end
 
-    if (dual_freq)
-        %dual frequency user (iono-free combination)        
-        good_los = good_sat;
-        %residual iono error (higher order terms) really sig_uire 
-        sig2_uire(good_sat) = (MOPS_UIRE_NUM*ones(size(good_sat))./...
-                   (MOPS_UIRE_DEN + el(good_los).^2) + MOPS_UIRE_CONST).^2;
-        sig2 = sig_flt(good_los).^2 + sig2_uire(good_sat) + sig2_cnmp(good_sat)*...
-               (CONST_F1^4 + CONST_F5^4)/((CONST_F1^2 - CONST_F5^2)^2)...
-               + sig2_trop(good_los);              
-    else
-        good_los = [];
-        obl2(good_sat) = obliquity2(el(good_sat));
-        if (pa_mode)
-            sig2_uire(good_sat) = grid2uive(usr2satdata(good_sat,COL_U2S_IPPLL), ...
-                                            igpdata(:,COL_IGP_LL), inv_igp_mask, ...
-                                            igpdata(:,COL_IGP_GIVEI), ...
-                                            [], igpdata(:,COL_IGP_DEGRAD), ...
-                                            rss_iono).*obl2(good_sat);
+    % ==== IONO ====
+    switch give_mode
+        case GIVE_MODE_DUALFREQ
+            %dual frequency user (iono-free combination)        
+            good_los = good_sat;
+            %residual iono error (higher order terms) really sig_uire 
+            % Consider centered normal distribution
+            mu_uire(good_sat) = 0;
+            sig2_uire(good_sat) = (MOPS_UIRE_NUM*ones(size(good_sat))./...
+                       (MOPS_UIRE_DEN + el(good_los).^2) + MOPS_UIRE_CONST).^2;
+            %variance for each LOS
+            sig2 = sig_flt(good_los).^2 + sig2_uire(good_sat) + sig2_cnmp(good_sat)*...
+                   (CONST_F1^4 + CONST_F5^4)/((CONST_F1^2 - CONST_F5^2)^2)...
+                   + sig2_trop(good_los);
+        case GIVE_MODE_NSEMODEL
+            
+            good_los = [];
+            obl2(good_sat) = obliquity2(el(good_sat));
+            
+            % compute uire statistics
+            [mu_uire, sig2_uire, Uire] = nse_uire(usrdata, usr2satdata, good_los);
+            
             good_uire=find(sig2_uire(good_sat) > 0);
             if(~isempty(good_uire))
                 good_los=good_sat(good_uire);            
             end
-        else
-            mag_lat = usr2satdata(good_sat,COL_U2S_IPPLL(1)) + ...
-                           0.064*180*cos((usr2satdata(good_sat, ...
-                             COL_U2S_IPPLL(2))/180-1.617)*pi);
-                         
-            %mid-latitude klobuchar confidence
-            sig2_uire(good_sat) = 20.25*obl2(good_sat);
-            %low-latitude klobuchar confidence
-            idx = find(abs(mag_lat) < 20);
-            if(~isempty(idx))
-                sig2_uire(good_sat(idx)) = 81*obl2(good_sat(idx));
+            
+            % variance for each los
+            if(~isempty(good_los))
+                %add in degradation terms
+                if rss_udre
+                    sig2_flt = sig_flt(good_los).^2 + ...
+                                   satdata(satidx(good_los), COL_SAT_DEGRAD);
+                else
+                    sig2_flt = (sig_flt(good_los) + ...
+                               satdata(satidx(good_los), COL_SAT_DEGRAD)).^2;
+                end
+                sig2 = sig2_flt  + sig2_uire(good_los) + ...
+                       sig2_trop(good_los) + sig2_cnmp(good_los);        
             end
-            %high-latitude klobuchar confidence
-            idx = find(abs(mag_lat) > 55);
-            if(~isempty(idx))
-                sig2_uire(good_sat(idx)) = 36*obl2(good_sat(idx));
-            end            
-            good_los = good_sat;
-        end
-        if(~isempty(good_los))
-            %add in degradation terms
-            if rss_udre
-                sig2_flt = sig_flt(good_los).^2 + ...
-                               satdata(satidx(good_los), COL_SAT_DEGRAD);
+            
+        otherwise
+            good_los = [];
+            obl2(good_sat) = obliquity2(el(good_sat));
+            % Consider centered normal distribution
+            mu_uire(good_sat) = 0;
+            if (pa_mode) % Whether to calulate vertical and horizontal or horizontal only
+                % Find UIVE at IPP
+                sig2_uire(good_sat) = grid2uive(usr2satdata(good_sat,COL_U2S_IPPLL), ...
+                                                igpdata(:,COL_IGP_LL), inv_igp_mask, ...
+                                                igpdata(:,COL_IGP_GIVEI), ...
+                                                [], igpdata(:,COL_IGP_DEGRAD), ...
+                                                rss_iono).*obl2(good_sat);
+                good_uire=find(sig2_uire(good_sat) > 0);
+                if(~isempty(good_uire))
+                    good_los=good_sat(good_uire);            
+                end
             else
-                sig2_flt = (sig_flt(good_los) + ...
-                           satdata(satidx(good_los), COL_SAT_DEGRAD)).^2;
+                mag_lat = usr2satdata(good_sat,COL_U2S_IPPLL(1)) + ...
+                               0.064*180*cos((usr2satdata(good_sat, ...
+                                 COL_U2S_IPPLL(2))/180-1.617)*pi);
+
+                %mid-latitude klobuchar confidence
+                sig2_uire(good_sat) = 20.25*obl2(good_sat);
+                %low-latitude klobuchar confidence
+                idx = find(abs(mag_lat) < 20);
+                if(~isempty(idx))
+                    sig2_uire(good_sat(idx)) = 81*obl2(good_sat(idx));
+                end
+                %high-latitude klobuchar confidence
+                idx = find(abs(mag_lat) > 55);
+                if(~isempty(idx))
+                    sig2_uire(good_sat(idx)) = 36*obl2(good_sat(idx));
+                end            
+                good_los = good_sat;
             end
-            sig2 = sig2_flt  + sig2_uire(good_los) + ...
-                   sig2_trop(good_los) + sig2_cnmp(good_los);        
-        end
+            if(~isempty(good_los))
+                %add in degradation terms
+                if rss_udre
+                    sig2_flt = sig_flt(good_los).^2 + ...
+                                   satdata(satidx(good_los), COL_SAT_DEGRAD);
+                else
+                    sig2_flt = (sig_flt(good_los) + ...
+                               satdata(satidx(good_los), COL_SAT_DEGRAD)).^2;
+                end
+                sig2 = sig2_flt  + sig2_uire(good_los) + ...
+                       sig2_trop(good_los) + sig2_cnmp(good_los);        
+            end
     end
     
     if(~isempty(good_los))
         usr2satdata(good_los, COL_U2S_SIGFLT) = sig_flt(good_los);
+        usr2satdata(good_los, COL_U2S_BIASUIRE) = mu_uire(good_los);
         usr2satdata(good_los, COL_U2S_SIG2UIRE) = sig2_uire(good_los);
         usr2satdata(good_los, COL_U2S_OB2PP) = obl2(good_los);
 
