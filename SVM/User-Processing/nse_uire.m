@@ -51,8 +51,8 @@ for iElev = 1:length(el_bin)-1
             userLL = usrdata(usrdata(:, COL_USR_UID) == usr2satdata(goodLosInBin(i), COL_USR_UID), COL_USR_LL);
 
             % assign mean and std to los
-            mu_uire(goodLosInBin(i)) = meanInterp(userLL(1), userLL(2));
-            sig2_uire(goodLosInBin(i)) = stdInterp(userLL(1), userLL(2))^2;
+            mu_uire(goodLosInBin(i)) = meanInterp(userLL(2), userLL(1));
+            sig2_uire(goodLosInBin(i)) = stdInterp(userLL(2), userLL(1))^2;
         end
     end 
     

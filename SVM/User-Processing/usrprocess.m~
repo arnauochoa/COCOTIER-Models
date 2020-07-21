@@ -178,7 +178,7 @@ if(~isempty(good_udre))
             % compute uire statistics
             [mu_uire, sig2_uire, Uire] = nse_uire(usrdata, usr2satdata, good_los);
             
-            good_los = intersect(good_los, find(~isnan(sig2_uire)));
+            
             % variance for each los
             if(~isempty(good_los))
                 %add in degradation terms
