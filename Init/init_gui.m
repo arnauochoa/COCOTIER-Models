@@ -116,7 +116,7 @@ GUI_OUT_TAGS = {'cbAvail','cbVHPL','cbUdremap','cbGivemap',...
 %default is first active one on the list
 
 %UDRE GPS buttons
-default=1;
+default=3; %index of default option
 for i = 1:length(GUI_UDREGPS_TAGS)
     GUI_UDREGPS_HNDL(i) = findobj('Tag',GUI_UDREGPS_TAGS{i});
     if(isempty(GUI_UDREGPS_ALGO{i}) || isempty(which(GUI_UDREGPS_ALGO{i})) || ...
@@ -124,15 +124,14 @@ for i = 1:length(GUI_UDREGPS_TAGS)
       set(GUI_UDREGPS_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_UDREGPS_HNDL(i), 'Enable', 'on', 'String', GUI_UDREGPS_MENU{i});
-      if (default)
+      if i == default
         set(GUI_UDREGPS_HNDL(i), 'Value', 1);
-        default=0;
-      end   
+      end
     end
 end
 
 %UDRE GEO buttons
-default=1;
+default=3;
 for i = 1:length(GUI_UDREGEO_TAGS)
     GUI_UDREGEO_HNDL(i) = findobj('Tag',GUI_UDREGEO_TAGS{i});
     if(isempty(GUI_UDREGEO_ALGO{i}) || isempty(which(GUI_UDREGEO_ALGO{i})) || ...
@@ -140,15 +139,14 @@ for i = 1:length(GUI_UDREGEO_TAGS)
       set(GUI_UDREGEO_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_UDREGEO_HNDL(i), 'Enable', 'on', 'String', GUI_UDREGEO_MENU{i});
-      if (default)
+      if i == default
         set(GUI_UDREGEO_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end
 
 %GIVE buttons
-default=1;
+default=4;
 for i = 1:length(GUI_GIVE_TAGS)
     GUI_GIVE_HNDL(i) = findobj('Tag',GUI_GIVE_TAGS{i});
     if(isempty(GUI_GIVE_ALGO{i}) || isempty(which(GUI_GIVE_ALGO{i})) || ...
@@ -156,9 +154,8 @@ for i = 1:length(GUI_GIVE_TAGS)
       set(GUI_GIVE_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_GIVE_HNDL(i), 'Enable', 'on', 'String', GUI_GIVE_MENU{i});
-      if (default)
+      if i == default
         set(GUI_GIVE_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end
@@ -169,23 +166,23 @@ if GUI_GIVE_MENU{i} == 'Dual Freq'
 end
 
 %IGP Mask buttons
-default=1;
+default=4;
 for i = 1:length(GUI_IGPMASK_TAGS)
     GUI_IGPMASK_HNDL(i) = findobj('Tag',GUI_IGPMASK_TAGS{i});
     if(isempty(GUI_IGPMASK_DAT{i}) || isempty(which(GUI_IGPMASK_DAT{i})))
       set(GUI_IGPMASK_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_IGPMASK_HNDL(i), 'Enable', 'on');
-      if (default)
+      if i == default
+        set(GUI_IGPMASK_HNDL(1), 'Value', 0);
         set(GUI_IGPMASK_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end
 
 
 %WRS CNMP buttons
-default=1;
+default=true;
 for i = 1:length(GUI_WRSCNMP_TAGS)
     GUI_WRSCNMP_HNDL(i) = findobj('Tag',GUI_WRSCNMP_TAGS{i});
     if(isempty(GUI_WRSCNMP_ALGO{i}) || isempty(which(GUI_WRSCNMP_ALGO{i})) || ...
@@ -193,7 +190,7 @@ for i = 1:length(GUI_WRSCNMP_TAGS)
       set(GUI_WRSCNMP_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_WRSCNMP_HNDL(i), 'Enable', 'on');
-      if (default)
+      if default
         set(GUI_WRSCNMP_HNDL(i), 'Value', 1);
         default=0;
       end   
@@ -201,7 +198,7 @@ for i = 1:length(GUI_WRSCNMP_TAGS)
 end
 
 %user CNMP buttons
-default=1;
+default=true;
 for i = 1:length(GUI_USRCNMP_TAGS)
     GUI_USRCNMP_HNDL(i) = findobj('Tag',GUI_USRCNMP_TAGS{i});
     if(isempty(GUI_USRCNMP_ALGO{i}) || isempty(which(GUI_USRCNMP_ALGO{i})) || ...
@@ -217,16 +214,16 @@ for i = 1:length(GUI_USRCNMP_TAGS)
 end
 
 %WRS menu buttons 
-default=1;
+default=4;
 for i = 1:length(GUI_WRS_TAGS)
     GUI_WRS_HNDL(i) = findobj('Tag',GUI_WRS_TAGS{i});
     if(isempty(GUI_WRS_DAT{i}) || isempty(which(GUI_WRS_DAT{i})))
       set(GUI_WRS_HNDL(i), 'Enable', 'off', 'Value', 0, 'String', GUI_WRS_MENU{i});
     else  
       set(GUI_WRS_HNDL(i), 'Enable', 'on' ,'Value', 0, 'String', GUI_WRS_MENU{i});
-      if (default)
+      if i == default
+        set(GUI_WRS_HNDL(1), 'Value', 0);
         set(GUI_WRS_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end
@@ -235,16 +232,15 @@ for i = 1:length(GUI_WRSPB_TAGS)
 end
 
 %user menu buttons 
-default=1;
+default=6;
 for i = 1:length(GUI_USR_TAGS)
     GUI_USR_HNDL(i) = findobj('Tag',GUI_USR_TAGS{i});
     if(isempty(GUI_USR_DAT{i}) || isempty(which(GUI_USR_DAT{i})))
       set(GUI_USR_HNDL(i), 'Enable', 'off', 'Value', 0, 'String', GUI_USR_MENU{i});
     else  
       set(GUI_USR_HNDL(i), 'Enable', 'on', 'Value', 0, 'String', GUI_USR_MENU{i});
-      if (default)
+      if i == default
         set(GUI_USR_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end

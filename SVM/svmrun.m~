@@ -55,7 +55,8 @@ function svmrun(gpsudrefun, geoudrefun, givefun, usrcnmpfun,...
 %    use broadcast 250 bit messages in place of emulating the WMS
 global COL_SAT_UDREI COL_SAT_DEGRAD COL_SAT_XYZ COL_SAT_MINMON
 global COL_IGP_GIVEI COL_IGP_MINMON COL_IGP_BETA COL_IGP_DEGRAD COL_IGP_CHI2RATIO
-global  COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND 
+global COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND 
+global COL_USR_BIASUIRE_ENU COL_USR_SIG2UIRE_ENU
 global COL_U2S_SIGFLT COL_U2S_BIASUIRE COL_U2S_SIG2UIRE COL_U2S_OB2PP COL_U2S_UID  COL_U2S_GENUB
 global HIST_UDRE_NBINS HIST_GIVE_NBINS HIST_UDRE_EDGES HIST_GIVE_EDGES
 global HIST_UDREI_NBINS HIST_GIVEI_NBINS HIST_UDREI_EDGES HIST_GIVEI_EDGES
@@ -157,6 +158,10 @@ givei_hist=zeros(HIST_GIVEI_NBINS,1);
 nm_igp_hist=zeros(36,72);
 sat_xyz=[];
 
+nUser = size(usrdata, 1);
+% iono_mean_enu = nan(nUser, 3); % Auxiliar matrix to compute average mean of iono error
+% iono_sig2_enu = nan(nUser, 3); % Auxiliar matrix to compute average std of iono error
+
 if TRUTH_FLAG
    truth_matrix=load_truth(wrsdata, satdata);
    tcurr = tstart +truth_matrix(1,1);
@@ -228,10 +233,13 @@ while tcurr<=tend
     sat_xyz = [sat_xyz; satdata(:,COL_SAT_XYZ)];
 
     % USER processing
-    [vhpl, usr2satdata] = usrprocess(satdata, usrdata, igpdata, ...
+    [vhpl, usr2satdata, Uire] = usrprocess(satdata, usrdata, igpdata, ...
                                inv_igp_mask, usr2satdata, usrtrpfun, ...
                                usrcnmpfun, tcurr, pa_mode, give_mode, ...
                                rss_udre, rss_iono);
+    iono_mean_enu(:, :, itstep) = usr2satdata(:, COL_USR_BIASUIRE_ENU);
+    iono_sig2_enu(:, :, itstep) = usr2satdata(:, COL_USR_SIG2UIRE_ENU);
+                           
     vpl(:,itstep) = vhpl(:,1);
     hpl(:,itstep) = vhpl(:,2);
 
@@ -249,7 +257,7 @@ while tcurr<=tend
     mu_uive = usr2satdata(:, COL_U2S_BIASUIRE)./usr2satdata(:, COL_U2S_OB2PP);
     sig2_uive = usr2satdata(:, COL_U2S_SIG2UIRE)./usr2satdata(:, COL_U2S_OB2PP);
 	give_hist(1:HIST_GIVE_NBINS) = give_hist(1:HIST_GIVE_NBINS) + ...
-                                   svm_hist(3.29*sqrt(sig2_uive(hist_idx)),... % 3.29 is for 90% (?)
+                                   svm_hist(mu_uive(hist_idx) + 3.29*sqrt(sig2_uive(hist_idx)),... % 3.29 is for 90% (?)
 	                                        HIST_GIVE_EDGES);
     is_nm_igp = isnan(sig2_uive(hist_idx)) | ...
                                     sig2_uive(hist_idx) == MOPS_NOT_MONITORED;
@@ -266,6 +274,11 @@ while tcurr<=tend
     end
 end
 
+avg_iono_mean_enu = nanmean(iono_mean_enu, 3);
+avg_iono_sig2_enu = nanmean(iono_sig2_enu, 3);
+
+ind
+
 %profile off;
 %figure;
 %profile plot;
@@ -277,11 +290,12 @@ end
 
 save 'outputs' satdata usrdata wrsdata igpdata inv_igp_mask sat_xyz udrei ...
                givei vpl hpl usrlatgrid usrlongrid udre_hist give_hist ...
-		       udrei_hist givei_hist nm_igp_hist betai chi2ratioi;
+		       udrei_hist givei_hist nm_igp_hist betai chi2ratioi usr2satdata ...
+               Uire;
 % OUTPUT processing
 outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,sat_xyz,udrei,...
               givei,vpl,hpl,usrlatgrid,usrlongrid,outputs,percent,vhal,pa_mode,...
-			  udre_hist,give_hist,udrei_hist,givei_hist);
+			  udre_hist,give_hist,udrei_hist,givei_hist, Uire);
 
 
 

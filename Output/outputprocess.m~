@@ -109,40 +109,74 @@ if outputs(GUI_OUT_GIVEMAP)
     end
     
     % UIRE MAPS
-    if sum(~isnan(Uire.mean), 'all') && sum(~isnan(Uire.std), 'all')
-        for iEl = 1:length(Uire.elBins)-1
-            % UIRE bias
-            h=figure(GRAPH_UIREBIASMAP_FIGNO(iEl));
-            titleText = sprintf('UIRE BIAS MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
-            uire_stat_contour(Uire.mean(:, iEl), usrdata, OUTPUT_BIAS_LABEL, titleText);
-            figName = sprintf('UIRE BIAS MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
-            set(h, 'name', figName);
-            
-            % UIRE STD
-            h=figure(GRAPH_UIRESTDMAP_FIGNO(iEl));
-            titleText = sprintf('UIRE STD MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
-            uire_stat_contour(Uire.std(:, iEl), usrdata, OUTPUT_STD_LABEL, titleText);
-            figName = sprintf('UIRE STD MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
-            set(h, 'name', figName);
-        end
-    end
+%     if sum(~isnan(Uire.mean), 'all') && sum(~isnan(Uire.std), 'all')
+%         for iEl = 1:length(Uire.elBins)-1
+%             % UIRE bias
+%             h=figure(GRAPH_UIREBIASMAP_FIGNO(iEl));
+%             uire_stat_contour(Uire.mean(:, iEl), usrdata, OUTPUT_BIAS_LABEL);
+%             figName = sprintf('UIRE BIAS MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
+%             set(h, 'name', figName);
+%             
+%             % UIRE STD
+%             h=figure(GRAPH_UIRESTDMAP_FIGNO(iEl));
+%             uire_stat_contour(Uire.std(:, iEl), usrdata, OUTPUT_STD_LABEL);
+%             figName = sprintf('UIRE STD MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
+%             set(h, 'name', figName);
+%         end
+%     end
     % Iono ENU error maps
     if sum(~isnan(avg_iono_mean_enu), 'all') && sum(~isnan(avg_iono_sig2_enu), 'all')
         axis = {'EAST', 'NORTH', 'UP'};
-        for iAxis = 1:length(axis)
+        for iAxis = 1:3
             % Mean
             h = figure(GRAPH_IONOMEANENUMAP_FIGNO(iAxis));
-            titleText = ['Averaged Mean iono position error along ' axis{iAxis} ' axis'];
-            uire_stat_contour(usrdata(:, COL_USR_BIASUIRE_ENU(iAxis)), usrdata, OUTPUT_BIAS_LABEL, titleText);
-            figName = [axis{iAxis} ' ERROR MEAN'];
+            title = ['Mean iono position error along ' axis{iAxis} ' axis'];
+            uire_stat_contour(usrdata(:, COL_USR_BIASUIRE_ENU(iAxis)), usrdata, OUTPUT_BIAS_LABEL, title);
+            figName = 'EAST ERROR MEAN';
             set(h, 'name', figName);
             % Variance
             h = figure(GRAPH_IONOSIG2ENUMAP_FIGNO(iAxis));
-            titleText = ['Averaged Variance of iono position error along ' axis{iAxis} ' axis'];
-            uire_stat_contour(usrdata(:, COL_USR_SIG2UIRE_ENU(iAxis)), usrdata, OUTPUT_VAR_LABEL, titleText);
-            figName = [axis{iAxis} ' ERROR VARIANCE'];
+            title = 'Variance of iono position error along ' axis{iAxis} ' axis';
+            uire_stat_contour(usrdata(:, COL_USR_SIG2UIRE_ENU(iAxis)), usrdata, OUTPUT_VAR_LABEL, title);
+            figName = ' ERROR VARIANCE';
             set(h, 'name', figName);
         end
+        
+        % EAST
+        h = figure(GRAPH_IONOMEANENUMAP_FIGNO(1));
+        title = 'Mean iono position error along East axis';
+        uire_stat_contour(usrdata(:, COL_USR_BIASUIRE_ENU(1)), usrdata, OUTPUT_BIAS_LABEL, title);
+        figName = 'EAST ERROR MEAN';
+        set(h, 'name', figName);
+        h = figure(GRAPH_IONOSIG2ENUMAP_FIGNO(1));
+        title = 'Variance of iono position error along East axis';
+        uire_stat_contour(usrdata(:, COL_USR_SIG2UIRE_ENU(1)), usrdata, OUTPUT_VAR_LABEL, title);
+        figName = 'EAST ERROR VARIANCE';
+        set(h, 'name', figName);
+        
+        % NORTH
+        h = figure(GRAPH_IONOMEANENUMAP_FIGNO(2));
+        title = 'Mean iono position error along North axis';
+        uire_stat_contour(usrdata(:, COL_USR_BIASUIRE_ENU(2)), usrdata, OUTPUT_BIAS_LABEL, title);
+        figName = 'NORTH ERROR MEAN';
+        set(h, 'name', figName);
+        h = figure(GRAPH_IONOSIG2ENUMAP_FIGNO(2));
+        title = 'Variance of iono position error along North axis';
+        uire_stat_contour(usrdata(:, COL_USR_SIG2UIRE_ENU(2)), usrdata, OUTPUT_VAR_LABEL, title);
+        figName = 'NORTH ERROR VARIANCE';
+        set(h, 'name', figName);
+        
+        % UP
+        h = figure(GRAPH_IONOMEANENUMAP_FIGNO(3));
+        title = 'Mean iono position error along Up axis';
+        uire_stat_contour(usrdata(:, COL_USR_BIASUIRE_ENU(3)), usrdata, OUTPUT_BIAS_LABEL, title);
+        figName = 'UP ERROR MEAN';
+        set(h, 'name', figName);
+        h = figure(GRAPH_IONOSIG2ENUMAP_FIGNO(3));
+        title = 'Variance of iono position error along Up axis';
+        uire_stat_contour(usrdata(:, COL_USR_SIG2UIRE_ENU(3)), usrdata, OUTPUT_VAR_LABEL, title);
+        figName = 'UP ERROR VARIANCE';
+        set(h, 'name', figName);
     end
     
     

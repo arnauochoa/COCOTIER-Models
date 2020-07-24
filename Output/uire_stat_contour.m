@@ -1,4 +1,4 @@
-function uire_stat_contour(uireStat, usrdata, statType)
+function uire_stat_contour(uireStat, usrdata, statType, titleText)
 % GIVE_STAT_CONTOUR: Plots give statistic as contour over map
 %
 % Inputs:
@@ -14,7 +14,7 @@ global MOPS_SIG2_GIVE MOPS_GIVE MOPS_GIVEI_NM
 global MOPS_MU_GIVE MOPS_SIG_GIVE
 global GRAPH_GIVEI_COLORS
 global GRAPH_LL_WORLD GRAPH_LL_STATE
-global OUTPUT_BIAS_LABEL OUTPUT_STD_LABEL
+global OUTPUT_BIAS_LABEL OUTPUT_STD_LABEL OUTPUT_VAR_LABEL
 global COL_USR_LL
 
 % Set variables specific to each statistic
@@ -25,6 +25,9 @@ switch statType
     case OUTPUT_STD_LABEL
         mopsStat = MOPS_SIG_GIVE;
         units = 'm';
+    case OUTPUT_VAR_LABEL
+        mopsStat = MOPS_SIG2_GIVE;
+        units = 'm^2';
     otherwise
         error('Wrong statType');
 end
@@ -111,4 +114,4 @@ end
 
 axis(ax);
 
-title(['GIVE ' statType ' values']);
+title(titleText);
