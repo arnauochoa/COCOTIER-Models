@@ -190,7 +190,7 @@ if(~isempty(good_udre))
                     sig2_flt = (sig_flt(good_los) + ...
                                satdata(satidx(good_los), COL_SAT_DEGRAD)).^2;
                 end
-                sig2 = sig2_flt + usr2satdata(good_los, COL_U2S_SIG2UIRE) + ...
+                sig2 = sig2_flt  + usr2satdata(good_sat, COL_U2S_SIG2UIRE) + ...
                        sig2_trop(good_los) + sig2_cnmp(good_los);        
             end
             
@@ -250,7 +250,7 @@ if(~isempty(good_udre))
         usr2satdata(good_los, COL_U2S_OB2PP) = obl2(good_los);
 
         % calculate VPL and HPL
-        [vhpl(1:max(usridx(good_los)),:), G_usr, W_usr] = usr_vhpl(los_enub(good_los,:), ...
+        [vhpl(1:max(usridx(good_los)),:), G, W] = usr_vhpl(los_enub(good_los,:), ...
                                                  usridx(good_los), sig2, ...
                                                  usr2satdata(good_los,COL_U2S_PRN),...
                                                  pa_mode);
@@ -261,7 +261,7 @@ if(~isempty(good_udre))
         end
         
         % Compute mean and std of each user pos error due to iono
-          usrdata = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata);
+          [user_mu_iono, user_Cov_iono] = compute_user_stats(G, W, usr2satdata);
     end
 end
 

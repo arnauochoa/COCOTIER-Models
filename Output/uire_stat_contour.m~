@@ -120,16 +120,15 @@ circDots = (.1:.1:2);
 lon_circ = r_lon * cos( circDots * pi)';
 lat_circ = r_lat * sin( circDots * pi)';
 % Triangle dots
-lon_trian = [0 2*r_lon/sqrt(3) -2*r_lon/sqrt(3)];
-lat_trian = [r_lat -r_lat -r_lat];
+
 
 n_igp=size(ll_user,1);
 for idx=1:n_igp
-  patch(lon_circ+ll_user(idx,2), lat_circ+ll_user(idx,1), uireStatInd(idx));
+  patch(lon_circ+ll_user(idx,2),lat_circ+ll_user(idx,1),uireStatInd(idx));
 end
 n_stat = size(ECAC_pos, 1);
 for iStat = 1:n_stat
-    patch(lon_trian+ECAC_pos(iStat,1), lat_trian+ECAC_pos(iStat,2), 'k');
+    patch(lon_circ+ECAC_pos(iStat,1),lat_circ+ECAC_pos(iStat,2),'k');
 end
 
 axis(ax);

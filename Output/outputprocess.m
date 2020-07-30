@@ -1,7 +1,7 @@
 function outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,...
                        sat_xyz,udrei,givei,usrvpl,usrhpl,latgrid,...
 					   longrid,outputs,percent,vhal,pa_mode,udre_hist,give_hist,...
-					   udrei_hist,givei_hist, Uire, avg_iono_mean_enu, avg_iono_sig2_enu)
+					   udrei_hist,givei_hist, Uire, iono_mean_enub, iono_sig2_enub)
 %*************************************************************************
 %*     Copyright c 2007 The board of trustees of the Leland Stanford     *
 %*                      Junior University. All rights reserved.          *
@@ -17,14 +17,15 @@ function outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,...
 global COL_USR_LL COL_USR_INBND COL_IGP_LL COL_IGP_GIVEI COL_SAT_UDREI ...
         COL_IGP_BIAS COL_IGP_STD
 global GUI_OUT_AVAIL GUI_OUT_UDREMAP GUI_OUT_GIVEMAP ...
-        GUI_OUT_UDREHIST GUI_OUT_GIVEHIST GUI_OUT_VHPL GUI_OUT_COVAVAIL
-
+        GUI_OUT_UDREHIST GUI_OUT_GIVEHIST GUI_OUT_VHPL GUI_OUT_COVAVAIL ...
+        GUI_OUT_UIPESTATS
 global GRAPH_AVAIL_FIGNO GRAPH_VPL_FIGNO GRAPH_HPL_FIGNO
 global GRAPH_UDREMAP_FIGNO GRAPH_GIVEMAP_FIGNO
 global GRAPH_GIVEBIASMAP_FIGNO GRAPH_GIVESTDMAP_FIGNO
 global GRAPH_UIREBIASMAP_FIGNO GRAPH_UIRESTDMAP_FIGNO
 global GRAPH_UDREHIST_FIGNO GRAPH_GIVEHIST_FIGNO GRAPH_COV_AVAIL_FIGNO
-global GRAPH_IONOMEANENUMAP_FIGNO GRAPH_IONOSIG2ENUMAP_FIGNO
+global GRAPH_IONOMEANENUMAP_FIGNO GRAPH_IONOSTDENUMAP_FIGNO
+global GRAPH_IONOHIST_FIGNO
 global OUTPUT_BIAS_LABEL OUTPUT_STD_LABEL OUTPUT_VAR_LABEL
 global COL_USR_BIASUIRE_ENU COL_USR_SIG2UIRE_ENU
 
@@ -92,60 +93,40 @@ end
 
 if outputs(GUI_OUT_GIVEMAP)
     % sort gives for each user and determine gives at given percentage
-    if sum(sum(~isnan(givei)))
-        nigp = size(givei,1);
-        sortgive = zeros(size(givei));
-        percentidx = ceil(percent*nt);
-        for i = 1:nigp
-            sortgive(i,:) = sort(givei(i,:));
-        end
-        give_i = sortgive(:,percentidx);
-        h=figure(GRAPH_GIVEMAP_FIGNO);
-        give_contour(igp_mask, inv_igp_mask, give_i, percent);
-        set(h,'name','GIVE MAP');
-%        text(longrid(1)+1,latgrid(1)+1,'o -  USER');
-    else
-        fprintf('No GIVEs were calculated\n');
-    end
+%     if sum(sum(~isnan(givei)))
+%         nigp = size(givei,1);
+%         sortgive = zeros(size(givei));
+%         percentidx = ceil(percent*nt);
+%         for i = 1:nigp
+%             sortgive(i,:) = sort(givei(i,:));
+%         end
+%         give_i = sortgive(:,percentidx);
+%         h=figure(GRAPH_GIVEMAP_FIGNO);
+%         give_contour(igp_mask, inv_igp_mask, give_i, percent);
+%         set(h,'name','GIVE MAP');
+% %        text(longrid(1)+1,latgrid(1)+1,'o -  USER');
+%     else
+%         fprintf('No GIVEs were calculated\n');
+%     end
     
     % UIRE MAPS
-    if sum(~isnan(Uire.mean), 'all') && sum(~isnan(Uire.std), 'all')
-        for iEl = 1:length(Uire.elBins)-1
-            % UIRE bias
-            h=figure(GRAPH_UIREBIASMAP_FIGNO(iEl));
-            titleText = sprintf('UIRE BIAS MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
-            uire_stat_contour(Uire.mean(:, iEl), usrdata, OUTPUT_BIAS_LABEL, titleText);
-            figName = sprintf('UIRE BIAS MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
-            set(h, 'name', figName);
-            
-            % UIRE STD
-            h=figure(GRAPH_UIRESTDMAP_FIGNO(iEl));
-            titleText = sprintf('UIRE STD MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
-            uire_stat_contour(Uire.std(:, iEl), usrdata, OUTPUT_STD_LABEL, titleText);
-            figName = sprintf('UIRE STD MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
-            set(h, 'name', figName);
-        end
-    end
-    % Iono ENU error maps
-    if sum(~isnan(avg_iono_mean_enu), 'all') && sum(~isnan(avg_iono_sig2_enu), 'all')
-        axis = {'EAST', 'NORTH', 'UP'};
-        for iAxis = 1:length(axis)
-            % Mean
-            h = figure(GRAPH_IONOMEANENUMAP_FIGNO(iAxis));
-            titleText = ['Averaged Mean iono position error along ' axis{iAxis} ' axis'];
-            uire_stat_contour(usrdata(:, COL_USR_BIASUIRE_ENU(iAxis)), usrdata, OUTPUT_BIAS_LABEL, titleText);
-            figName = [axis{iAxis} ' ERROR MEAN'];
-            set(h, 'name', figName);
-            % Variance
-            h = figure(GRAPH_IONOSIG2ENUMAP_FIGNO(iAxis));
-            titleText = ['Averaged Variance of iono position error along ' axis{iAxis} ' axis'];
-            uire_stat_contour(usrdata(:, COL_USR_SIG2UIRE_ENU(iAxis)), usrdata, OUTPUT_VAR_LABEL, titleText);
-            figName = [axis{iAxis} ' ERROR VARIANCE'];
-            set(h, 'name', figName);
-        end
-    end
-    
-    
+%     if sum(~isnan(Uire.mean), 'all') && sum(~isnan(Uire.std), 'all')
+%         for iEl = 1:length(Uire.elBins)-1
+%             % UIRE bias
+%             h=figure(GRAPH_UIREBIASMAP_FIGNO(iEl));
+%             titleText = sprintf('UIRE BIAS MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
+%             uire_stat_contour(Uire.mean(:, iEl), usrdata, OUTPUT_BIAS_LABEL, titleText);
+%             figName = sprintf('UIRE BIAS MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
+%             set(h, 'name', figName);
+%             
+%             % UIRE STD
+%             h=figure(GRAPH_UIRESTDMAP_FIGNO(iEl));
+%             titleText = sprintf('UIRE STD MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
+%             uire_stat_contour(Uire.std(:, iEl), usrdata, OUTPUT_STD_LABEL, titleText);
+%             figName = sprintf('UIRE STD MAP: %d < el < %d', Uire.elBins(iEl), Uire.elBins(iEl+1));
+%             set(h, 'name', figName);
+%         end
+%     end
 %     % Bias and STD plots
 %     if sum(~isnan(igpdata(:, COL_IGP_BIAS))) && all(igpdata(:, COL_IGP_BIAS)) % check NaN and 0
 %         h=figure(GRAPH_GIVEBIASMAP_FIGNO);
@@ -156,9 +137,34 @@ if outputs(GUI_OUT_GIVEMAP)
 %         h=figure(GRAPH_GIVESTDMAP_FIGNO);
 %         give_stat_contour(igp_mask, inv_igp_mask, igpdata(:, COL_IGP_STD), OUTPUT_STD_LABEL);
 %         set(h,'name','GIVE STD MAP');
-%     end
-    
+%     end  
+end
+
+if outputs(GUI_OUT_UIPESTATS)
+    % Iono ENU error maps
+    if sum(~isnan(iono_mean_enub), 'all') && sum(~isnan(iono_sig2_enub), 'all')
+        dimensions = {'EAST', 'NORTH', 'UP', 'TIME'};
+        [prctile_iono_mean_enub, prctile_iono_std_enub] = findStatPrctiles(iono_mean_enub, iono_sig2_enub, percent);
+        for iDim = 1:length(dimensions)
+            % Mean
+            h = figure(GRAPH_IONOMEANENUMAP_FIGNO(iDim));
+            titleText = ['Mean iono position error along ' dimensions{iDim} ' axis at ' num2str(percent)];
+            uire_stat_contour(prctile_iono_mean_enub(:, iDim), usrdata, OUTPUT_BIAS_LABEL, titleText);
+            figName = [dimensions{iDim} ' ERROR MEAN ' num2str(percent)];
+            set(h, 'name', figName);
+            % Variance
+            h = figure(GRAPH_IONOSTDENUMAP_FIGNO(iDim));
+            titleText = ['STD of iono position error along ' dimensions{iDim} ' axis at ' num2str(percent)];
+            uire_stat_contour(prctile_iono_std_enub(:, iDim), usrdata, OUTPUT_STD_LABEL, titleText);
+            figName = [dimensions{iDim} ' ERROR VARIANCE ' num2str(percent)];
+            set(h, 'name', figName);
+        end
         
+        % Histograms
+        pos = [30 -15; 30 35; 70 20; 70 -15; 50 0];
+        plotIonoStatHistograms(usrdata(:, COL_USR_LL), pos, iono_mean_enub, iono_sig2_enub)
+    end
+    
 end
 
 if outputs(GUI_OUT_UDREMAP),
