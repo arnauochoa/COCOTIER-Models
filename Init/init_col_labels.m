@@ -67,7 +67,7 @@ COL_USR_UHAT = 14:16;
 COL_USR_INBND = 17;
 COL_USR_MEX = 18;
 COL_USR_BIASUIRE_ENUB = 19:22;      % UIRE mean projected onto ENU
-COL_USR_SIG2UIRE_ENUB = 23:26;       % UIRE covariance projected onto ENU (matrix reshaped by rows)
+COL_USR_SIG2UIRE_ENUB = 23:26;      % UIRE variance projected onto ENU
 COL_USR_MAX = 26;
 
 % IGPDATA
@@ -116,3 +116,4 @@ COL_U2S_BIASUIRE_ENU = 26:28;   % UIRE mean projected onto ENU
 COL_U2S_SIG2UIRE_ENU = 29:31;   % UIRE variance projected onto ENU
 COL_U2S_MAX = 31;               % Num of columns
 COL_U2S_INITNAN = 3:31;         % Columpns to initialize as NaN
+

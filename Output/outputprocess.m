@@ -143,7 +143,7 @@ end
 if outputs(GUI_OUT_UIPESTATS)
     % Iono ENU error maps
     if sum(~isnan(iono_mean_enub), 'all') && sum(~isnan(iono_sig2_enub), 'all')
-        dimensions = {'EAST', 'NORTH', 'UP', 'TIME'};
+        dimensions = {'EAST', 'NORTH', 'UP', 'CLOCK'};
         [prctile_iono_mean_enub, prctile_iono_std_enub] = findStatPrctiles(iono_mean_enub, iono_sig2_enub, percent);
         for iDim = 1:length(dimensions)
             % Mean
@@ -161,8 +161,7 @@ if outputs(GUI_OUT_UIPESTATS)
         end
         
         % Histograms
-        pos = [30 -15; 30 35; 70 20; 70 -15; 50 0];
-        plotIonoStatHistograms(usrdata(:, COL_USR_LL), pos, iono_mean_enub, iono_sig2_enub)
+        plotIonoStatHistograms(usrdata(:, COL_USR_LL), iono_mean_enub, iono_sig2_enub)
     end
     
 end

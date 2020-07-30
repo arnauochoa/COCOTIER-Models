@@ -13,7 +13,7 @@ global COL_USR_UID COL_USR_LL COL_USR_BIASUIRE_ENU COL_USR_SIG2UIRE_ENU
 load(GIVE_NSE_RESULTSFILE, 'Result_MeanMat', 'Result_SizeMat', 'Result_StdMat', 'el_bin');
 load(GIVE_NSE_STATIONSFILE, 'ECAC_pos');
 
-nlos = size(usr2satdata, 1);
+% nlos = size(usr2satdata, 1);
 % sig2_uire = nan(nlos,1);    % User Ionospheric Range Error variance
 % mu_uire = nan(nlos,1);    % User Ionospheric Range Error variance
 
