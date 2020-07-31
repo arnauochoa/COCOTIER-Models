@@ -21,8 +21,7 @@ for iUser = 1:nUser
 
         % Find rotation matrix to go from XYZB to ENUB
         Rot = eye(4);
-        Rot(1:3, 1:3) = findxyz2enu(deg2rad(usrdata(iUser, COL_USR_LL(1))), ... % User Latitude in radians
-                                    deg2rad(usrdata(iUser, COL_USR_LL(2))));    % User Longitude in radians
+        Rot(1:3, 1:3) = findxyz2enu(deg2rad(usr2satdata(iUser, COL_USR_LL(1))), deg2rad(usr2satdata(iUser, COL_USR_LL(2))));
 
         % Find mean of iono error in ENU
         mu_xyzb = S * usr2satdata(iLos, COL_U2S_BIASUIRE);

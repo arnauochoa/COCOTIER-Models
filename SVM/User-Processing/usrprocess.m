@@ -261,7 +261,7 @@ if(~isempty(good_udre))
         end
         
         % Compute mean and std of each user pos error due to iono
-          usrdata = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata);
+        usrdata = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata);
     end
 end
 

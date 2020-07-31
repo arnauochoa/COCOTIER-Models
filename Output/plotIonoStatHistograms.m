@@ -1,6 +1,6 @@
 function [] = plotIonoStatHistograms(userLL, iono_mean_enub, iono_sig2_enub)
 
-% global GRAPH_IONOHIST_FIGNO;
+global GRAPH_IONOHIST_FIGNO;
 global GIVE_NSE_HISTOGRAMFILE;
 
 % Obtain positions used to plot the histograms
@@ -9,46 +9,47 @@ posIdx = find(ismember(userLL, pos ,'rows'));
 
 % Initializations
 nPos = length(posIdx);
-nBinsDiv = 5;
 
-% colNames = {'lat', 'lon', 'meanEast', 'meanNorth', 'meanUp', 'meanClock', ...
-%                 'stdEast', 'stdNorth', 'stdUp', 'stdClock'};
-% ionoErrorStats = nan(nPos, 10);
+dimensions = {'EAST', 'NORTH', 'UP', 'CLOCK'};
+nDim = length(dimensions);
 
 for iPos = 1:nPos
 %     S.f = figure(GRAPH_IONOHIST_FIGNO(iPos));
-    S.f = figure;
-    %% MEAN
+    S.f = figure(GRAPH_IONOHIST_FIGNO(iPos));
+    % Mean
     pos_iono_mean_enub = permute(iono_mean_enub(posIdx(iPos), :, :), [3 2 1]);
-    nSamples = size(pos_iono_mean_enub, 1);
-    % Mean East
-    subplot(2, 4, 1); 
-    S.h(1) = histogram(pos_iono_mean_enub(:, 1), floor(nSamples/nBinsDiv)); xlabel('\mu_E');
-    % Mean North
-    subplot(2, 4, 2); 
-    S.h(2) = histogram(pos_iono_mean_enub(:, 2), floor(nSamples/nBinsDiv)); xlabel('\mu_N');
-    % Mean Up
-    subplot(2, 4, 3); 
-    S.h(3) = histogram(pos_iono_mean_enub(:, 3), floor(nSamples/nBinsDiv)); xlabel('\mu_U');
-    % Mean Clock Offset
-    subplot(2, 4, 4); 
-    S.h(4) = histogram(pos_iono_mean_enub(:, 4), floor(nSamples/nBinsDiv)); xlabel('\mu_C');
-    
-    %% Standard deviation
+    % Standard deviation
     pos_iono_sig2_enub = permute(iono_sig2_enub(posIdx(iPos), :, :), [3 2 1]);
     pos_iono_std_enub = sqrt(abs(pos_iono_sig2_enub));
+    
+    nSamples = size(pos_iono_mean_enub, 1);
+    
+    for iDim = 1:nDim
+        % Mean histogram
+        subplot(2, 4, iDim);
+        S.h(iDim) = histogram(pos_iono_mean_enub(:, iDim)); 
+        xlabel(['\mu_{' dimensions(iDim) '}']);
+        
+        % STD histogram
+        subplot(2, 4, iDim+nDim); 
+        S.h(iDim+nDim) = histogram(pos_iono_std_enub(:, iDim)); 
+        xlabel(['\sigma_{' dimensions(iDim) '}']);
+    end
+    
+    %% Standard deviation
+
     % Sigma East
     subplot(2, 4, 5); 
-    S.h(5) = histogram(pos_iono_std_enub(:, 1), floor(nSamples/nBinsDiv)); xlabel('\sigma_E');
+    S.h(5) = histogram(pos_iono_std_enub(:, 1)); xlabel('\sigma_E');
     % Sigma North
     subplot(2, 4, 6); 
-    S.h(6) = histogram(pos_iono_std_enub(:, 2), floor(nSamples/nBinsDiv)); xlabel('\sigma_N');
+    S.h(6) = histogram(pos_iono_std_enub(:, 2)); xlabel('\sigma_N');
     % Sigma Up
     subplot(2, 4, 7); 
-    S.h(7) = histogram(pos_iono_std_enub(:, 3), floor(nSamples/nBinsDiv)); xlabel('\sigma_U');
+    S.h(7) = histogram(pos_iono_std_enub(:, 3)); xlabel('\sigma_U');
     % Sigma Clock Offset
     subplot(2, 4, 8); 
-    S.h(8) = histogram(pos_iono_std_enub(:, 4), floor(nSamples/nBinsDiv)); xlabel('\sigma_C');
+    S.h(8) = histogram(pos_iono_std_enub(:, 4)); xlabel('\sigma_C');
     
     %% Figure config
     % Buttons to change nbins
@@ -75,16 +76,16 @@ for iPos = 1:nPos
     
     %% 3D histograms
     % East
-    f = figure;
-    dimensions = {'EAST', 'NORTH', 'UP', 'CLOCK'};
+    f = figure(GRAPH_IONOHIST_FIGNO(iPos+nPos));
     
-    for iDim = 1:length(dimensions)
+    for iDim = 1:nDim
         subplot(2,2,iDim);
         statsDim = [pos_iono_mean_enub(:,iDim), pos_iono_std_enub(:,iDim)];
-        hist3(statsDim, 'CDataMode','auto','FaceColor','interp'); 
+        hist3(statsDim, 'CDataMode','auto'); 
         xlabel(['\mu_{' dimensions{iDim} '}']);
         ylabel(['\sigma_{' dimensions{iDim} '}']);
-        
+        colorbar
+        view(2)
     end
 
     
