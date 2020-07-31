@@ -1,5 +1,5 @@
-function uire_stat_contour(uireStat, usrdata, statType, titleText)
-% GIVE_STAT_CONTOUR: Plots give statistic as contour over map
+function iono_error_stat_contour(ionoErrStat, usrdata, statType, titleText)
+% IONO_ERROR_STAT_CONTOUR: Plots iono error statistic as contour over map
 %
 % Inputs:
 %     
@@ -61,11 +61,11 @@ ll_map=[reshape(lats, n_map, 1) reshape(lons, n_map, 1)];
 uireStat_map=repmat(MOPS_GIVEI_NM,n_map,1);
 
 % Find UIRE stat indices
-uireStatInd = assign_indices(uireStat, mopsStat, MOPS_GIVEI_NM);
+uireStatInd = assign_indices(ionoErrStat, mopsStat, MOPS_GIVEI_NM);
 
 %interpolate onto the mesh
-interp = scatteredInterpolant(ll_user(:, 2), ll_user(:, 1), uireStat,'linear','none'); % Lon, Lat
-temp = interp(ll_map(:,2), ll_map(:,1)); % Lon, Lat
+interp = scatteredInterpolant(ll_user(:, 1), ll_user(:, 2), ionoErrStat,'linear','none'); % Lat, Lon
+temp = interp(ll_map(:,1), ll_map(:,2)); % Lat, Lon
 
 %determine the index values
 for idx = 2:length(mopsStat)-1

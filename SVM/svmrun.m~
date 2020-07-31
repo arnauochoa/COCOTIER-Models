@@ -56,7 +56,7 @@ function svmrun(gpsudrefun, geoudrefun, givefun, usrcnmpfun,...
 global COL_SAT_UDREI COL_SAT_DEGRAD COL_SAT_XYZ COL_SAT_MINMON
 global COL_IGP_GIVEI COL_IGP_MINMON COL_IGP_BETA COL_IGP_DEGRAD COL_IGP_CHI2RATIO
 global COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND 
-global COL_USR_BIASIONO_ENUB COL_USR_SIG2IONO_ENUB
+global COL_USR_BIASUIRE_ENUB COL_USR_SIG2UIRE_ENUB
 global COL_U2S_SIGFLT COL_U2S_BIASUIRE COL_U2S_SIG2UIRE COL_U2S_OB2PP COL_U2S_UID  COL_U2S_GENUB
 global HIST_UDRE_NBINS HIST_GIVE_NBINS HIST_UDRE_EDGES HIST_GIVE_EDGES
 global HIST_UDREI_NBINS HIST_GIVEI_NBINS HIST_UDREI_EDGES HIST_GIVEI_EDGES
@@ -160,8 +160,8 @@ sat_xyz=[];
 
 nUser = size(usrdata, 1); nDim = 4;
 % initialize pos iono error mean and std
-iono_mean_enub = nan(nUser, nDim, ntstep);
-iono_sig2_enub = nan(nUser, nDim, ntstep);
+iono_mean_enuc = nan(nUser, nDim, ntstep);
+iono_sig2_enub = nan(nUser, nDim^2, ntstep);
 
 if TRUTH_FLAG
    truth_matrix=load_truth(wrsdata, satdata);
@@ -238,8 +238,9 @@ while tcurr<=tend
                                inv_igp_mask, usr2satdata, usrtrpfun, ...
                                usrcnmpfun, tcurr, pa_mode, give_mode, ...
                                rss_udre, rss_iono);
-    iono_mean_enub(:, :, itstep) = usrdata(:, COL_USR_BIASIONO_ENUB);
-    iono_sig2_enub(:, :, itstep) = usrdata(:, COL_USR_SIG2IONO_ENUB);
+    iono_mean_enuc(:, :, itstep) = usrdata(:, COL_USR_BIASUIRE_ENUB);
+    iono_sig2_enub(:, :, itstep) = usrdata(:, COL_USR_SIG2UIRE_ENUB);
+%     iono_cov_enub(:, :, itstep) = usrdata(:, COL_USR_COVUIRE_ENUB);
 
                            
     vpl(:,itstep) = vhpl(:,1);
@@ -288,7 +289,7 @@ save 'outputs' satdata usrdata wrsdata igpdata inv_igp_mask sat_xyz udrei ...
 outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,sat_xyz,udrei,...
               givei,vpl,hpl,usrlatgrid,usrlongrid,outputs,percent,vhal,...
               pa_mode,udre_hist,give_hist,udrei_hist,givei_hist, IonoError, ...
-              iono_mean_enub, iono_sig2_enub);
+              iono_mean_enuc, iono_sig2_enub);
 
 
 

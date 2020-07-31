@@ -1,4 +1,4 @@
-FolderName = '../Fig/Linear_Interpolation/';   % Your destination folder
+FolderName = '../Fig/Nearest_Interpolation/';   % Your destination folder
 if ~exist(FolderName, 'dir')
        mkdir(FolderName)
 end

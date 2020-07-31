@@ -1,4 +1,4 @@
-function [vhpl, usr2satdata, Uire, usrdata] =                               ...
+function [vhpl, usr2satdata, IonoError, usrdata] =                               ...
                             usrprocess(satdata, usrdata, igpdata,               ...
                                         inv_igp_mask, usr2satdata, usrtrpfun,   ...
                                         usrcnmpfun, time, pa_mode, give_mode,   ...
@@ -91,7 +91,7 @@ sig_flt = NaN(nlos,1);      % Fast/Long-term variance
 % sig2_uire = NaN(nlos,1);    % User Ionospheric Range Error variance
 obl2 = NaN(nlos,1);         % Square of iono obliquity factor
 vhpl = NaN(nusr,2);         % Vertical and Horizontal Protection Level
-Uire = NaN;                 % Structure to save Uire statistics in NSE model
+IonoError = NaN;                 % Structure to save Uire statistics in NSE model
 
 [t1, t2]=meshgrid(1:nusr,1:nsat);
 usridx=reshape(t1,nlos,1);
@@ -177,7 +177,7 @@ if(~isempty(good_udre))
             obl2(good_sat) = obliquity2(el(good_sat));
             
             % compute uire statistics
-            [Uire, usrdata, usr2satdata] = af_nse_uire(usrdata, usr2satdata, good_los);
+            [IonoError, usrdata, usr2satdata] = af_nse_uire(usrdata, usr2satdata, good_los);
             
             good_los = intersect(good_los, find(~isnan(usr2satdata(:, COL_U2S_SIG2UIRE))));
             % variance for each los
