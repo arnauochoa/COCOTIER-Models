@@ -2,7 +2,7 @@ function svmrun(gpsudrefun, geoudrefun, givefun, usrcnmpfun,...
                 wrsgpscnmpfun, wrsgeocnmpfun,...
                 wrsfile, usrfile, igpfile, svfile, geodata, tstart, tend, ...
 				tstep, usrlatstep, usrlonstep, outputs, percent, vhal, ...
-                pa_mode, dual_freq)
+                pa_mode, give_mode)
 %*************************************************************************
 %*     Copyright c 2020 The board of trustees of the Leland Stanford     *
 %*                      Junior University. All rights reserved.          *
@@ -55,8 +55,9 @@ function svmrun(gpsudrefun, geoudrefun, givefun, usrcnmpfun,...
 %    use broadcast 250 bit messages in place of emulating the WMS
 global COL_SAT_UDREI COL_SAT_DEGRAD COL_SAT_XYZ COL_SAT_MINMON
 global COL_IGP_GIVEI COL_IGP_MINMON COL_IGP_BETA COL_IGP_DEGRAD COL_IGP_CHI2RATIO
-global  COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND 
-global COL_U2S_SIGFLT COL_U2S_SIG2UIRE COL_U2S_OB2PP COL_U2S_UID  COL_U2S_GENUB
+global COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND 
+global COL_USR_BIASIONO_ENUB COL_USR_SIG2IONO_ENUB
+global COL_U2S_SIGFLT COL_U2S_BIASUIRE COL_U2S_SIG2UIRE COL_U2S_OB2PP COL_U2S_UID  COL_U2S_GENUB
 global HIST_UDRE_NBINS HIST_GIVE_NBINS HIST_UDRE_EDGES HIST_GIVE_EDGES
 global HIST_UDREI_NBINS HIST_GIVEI_NBINS HIST_UDREI_EDGES HIST_GIVEI_EDGES
 global MOPS_SIN_USRMASK MOPS_SIN_WRSMASK MOPS_NOT_MONITORED
@@ -157,6 +158,11 @@ givei_hist=zeros(HIST_GIVEI_NBINS,1);
 nm_igp_hist=zeros(36,72);
 sat_xyz=[];
 
+nUser = size(usrdata, 1); nDim = 4;
+% initialize pos iono error mean and std
+iono_mean_enub = nan(nUser, nDim, ntstep);
+iono_sig2_enub = nan(nUser, nDim, ntstep);
+
 if TRUTH_FLAG
    truth_matrix=load_truth(wrsdata, satdata);
    tcurr = tstart +truth_matrix(1,1);
@@ -189,7 +195,7 @@ while tcurr<=tend
         [satdata,igpdata,wrs2satdata]=wmsprocess(alm_param, satdata, wrsdata,...
             igpdata, wrs2satdata, gpsudrefun, geoudrefun, givefun, wrstrpfun,...
             wrsgpscnmpfun, wrsgeocnmpfun, outputs, tcurr, tstart, tstep,...
-            wrs2sat_trise, inv_igp_mask, truth_data, dual_freq);
+            wrs2sat_trise, inv_igp_mask, truth_data, give_mode);
         
         %store the beta values
         betai(:,itstep) = igpdata(:,COL_IGP_BETA);
@@ -228,25 +234,32 @@ while tcurr<=tend
     sat_xyz = [sat_xyz; satdata(:,COL_SAT_XYZ)];
 
     % USER processing
-    [vhpl, usr2satdata] = usrprocess(satdata, usrdata, igpdata, ...
+    [vhpl, usr2satdata, IonoError, usrdata] = usrprocess(satdata, usrdata, igpdata, ...
                                inv_igp_mask, usr2satdata, usrtrpfun, ...
-                               usrcnmpfun, tcurr, pa_mode, dual_freq, ...
+                               usrcnmpfun, tcurr, pa_mode, give_mode, ...
                                rss_udre, rss_iono);
+    iono_mean_enub(:, :, itstep) = usrdata(:, COL_USR_BIASIONO_ENUB);
+    iono_sig2_enub(:, :, itstep) = usrdata(:, COL_USR_SIG2IONO_ENUB);
+
+                           
     vpl(:,itstep) = vhpl(:,1);
     hpl(:,itstep) = vhpl(:,2);
 
     sig_flt = usr2satdata(:, COL_U2S_SIGFLT);
 	hist_idx=find(los_in_bnd & ...
 	              (-usr2satdata(:,COL_U2S_GENUB(3)) >= MOPS_SIN_USRMASK));
+    % UDRE Histogram  
 	udre_hist(1:HIST_UDRE_NBINS) = udre_hist(1:HIST_UDRE_NBINS) + ...
                                    svm_hist(3.29*sig_flt(hist_idx),...
 	                                        HIST_UDRE_EDGES);
 	udre_hist(HIST_UDRE_NBINS+1) = udre_hist(HIST_UDRE_NBINS+1) + ...
                                 sum(isnan(sig_flt(hist_idx)) | ...
                                     sig_flt(hist_idx) == MOPS_NOT_MONITORED);
+    % GIVE Histogram
+    mu_uive = usr2satdata(:, COL_U2S_BIASUIRE)./usr2satdata(:, COL_U2S_OB2PP);
     sig2_uive = usr2satdata(:, COL_U2S_SIG2UIRE)./usr2satdata(:, COL_U2S_OB2PP);
 	give_hist(1:HIST_GIVE_NBINS) = give_hist(1:HIST_GIVE_NBINS) + ...
-                                   svm_hist(3.29*sqrt(sig2_uive(hist_idx)),...
+                                   svm_hist(mu_uive(hist_idx) + 3.29*sqrt(sig2_uive(hist_idx)),... % 3.29 is for 90% (?)
 	                                        HIST_GIVE_EDGES);
     is_nm_igp = isnan(sig2_uive(hist_idx)) | ...
                                     sig2_uive(hist_idx) == MOPS_NOT_MONITORED;
@@ -263,22 +276,19 @@ while tcurr<=tend
     end
 end
 
-%profile off;
-%figure;
-%profile plot;
-%profile viewer;
-%profile off;
 if (TRUTH_FLAG)
     fprintf('%d Chi2 Trips\n', TRIP_COUNT);
 end
 
 save 'outputs' satdata usrdata wrsdata igpdata inv_igp_mask sat_xyz udrei ...
                givei vpl hpl usrlatgrid usrlongrid udre_hist give_hist ...
-		       udrei_hist givei_hist nm_igp_hist betai chi2ratioi;
+		       udrei_hist givei_hist nm_igp_hist betai chi2ratioi usr2satdata ...
+               IonoError iono_mean_enub iono_sig2_enub;
 % OUTPUT processing
 outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,sat_xyz,udrei,...
-              givei,vpl,hpl,usrlatgrid,usrlongrid,outputs,percent,vhal,pa_mode,...
-			  udre_hist,give_hist,udrei_hist,givei_hist);
+              givei,vpl,hpl,usrlatgrid,usrlongrid,outputs,percent,vhal,...
+              pa_mode,udre_hist,give_hist,udrei_hist,givei_hist, IonoError, ...
+              iono_mean_enub, iono_sig2_enub);
 
 
 

@@ -1,4 +1,4 @@
-function satdata = af_geoconst(satdata,wrsdata,wrs2satdata,do_mt28, dual_freq)
+function satdata = af_geoconst(satdata,wrsdata,wrs2satdata,do_mt28, give_mode)
 
 %*************************************************************************
 %*     Copyright c 2009 The board of trustees of the Leland Stanford     *

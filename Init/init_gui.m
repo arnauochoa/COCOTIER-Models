@@ -18,7 +18,7 @@ global GUI_UDREGPS_INIT GUI_UDREGEO_INIT GUI_GIVE_INIT GUI_WRSTRP_INIT ...
         GUI_USRTRP_INIT GUI_WRSCNMP_INIT GUI_USRCNMP_INIT 
 global GUI_WRS_DAT GUI_USR_DAT GUI_SV_DAT GUI_GEOPOS_DAT
 global GUI_OUT_AVAIL GUI_OUT_UDREMAP GUI_OUT_GIVEMAP GUI_OUT_COVAVAIL...
-        GUI_OUT_UDREHIST GUI_OUT_GIVEHIST GUI_OUT_VHPL
+        GUI_OUT_UDREHIST GUI_OUT_GIVEHIST GUI_OUT_VHPL GUI_OUT_UIPESTATS
 global GUI_UDREGPS_HNDL GUI_UDREGEO_HNDL GUI_GIVE_HNDL GUI_IGPMASK_HNDL ...
         GUI_WRSCNMP_HNDL GUI_USRCNMP_HNDL ...
         GUI_WRS_HNDL GUI_WRSPB_HNDL GUI_USR_HNDL GUI_SV_HNDL GUI_GEO_HNDL ...
@@ -38,14 +38,14 @@ TRUTH_FLAG = 0;
 % Algorithms
 % Menu items
 GUI_UDREGPS_MENU = {'ADD','ADDR8/9','Constant','NSE Model','Custom2'};
-GUI_UDREGEO_MENU = {'ADD','ADDR8/9','Constant','NSE Model','Custom2'};
+GUI_UDREGEO_MENU = {'ADD','ADDR8/9','Constant','Custom1','Custom2'};
 GUI_GIVE_MENU    = {'ADD','ADDR6/7','Constant','NSE Model','Dual Freq'};
 GUI_IGPMASK_MENU  = {'IOC','Release 6/7', 'Release 8/9', 'EGNOS', 'MSAS','Brazil'};
 GUI_WRSCNMP_MENU = {'ADD-DET','ADD-Agg','Custom'};
 GUI_USRCNMP_MENU = {'MOPS','AAD-A','AAD-B'};
 
 GUI_UDREGPS_ALGO = {'af_udreadd','af_udreadd2','af_udreconst',...
-                    'af_udrecustom1','af_udrecustom2'};
+                    'af_udre_nsemodel','af_udrecustom2'};
 GUI_UDREGEO_ALGO = {'af_geoadd','af_geoadd2','af_geoconst',...
                     'af_geocustom1','af_geocustom2'};
 GUI_GIVE_ALGO    = {'af_giveadd','af_giveadd1','af_giveconst',...
@@ -56,7 +56,7 @@ GUI_USRTRP_ALGO  = {'af_trpmops','af_trpadd'};
 GUI_WRSCNMP_ALGO = {'af_cnmpadd','af_cnmpagg','af_wrscnmpcustom'};
 GUI_USRCNMP_ALGO = {'af_cnmp_mops','af_cnmpaad','af_cnmpaad'};
 
-GUI_UDREGPS_INIT = {'init_udre_osp','init_udre2_osp','','',''};
+GUI_UDREGPS_INIT = {'init_udre_osp','init_udre2_osp','','init_udre_nsemodel',''};
 GUI_UDREGEO_INIT = {'init_geo_osp','init_geo2_osp','','',''};
 GUI_GIVE_INIT = {'init_give_osp','init_giveadd1_osp','','init_give_nsemodel',''};
 GUI_WRSTRP_INIT = {'init_trop_osp',''};
@@ -86,9 +86,10 @@ GUI_OUT_AVAIL = 1;
 GUI_OUT_VHPL = 2;
 GUI_OUT_UDREMAP = 3;
 GUI_OUT_GIVEMAP = 4;
-GUI_OUT_UDREHIST = 5;
-GUI_OUT_GIVEHIST = 6;
-GUI_OUT_COVAVAIL = 7;
+GUI_OUT_UIPESTATS = 5;
+GUI_OUT_UDREHIST = 6;
+GUI_OUT_GIVEHIST = 7;
+GUI_OUT_COVAVAIL = 8;
 
 % tag fields for buttons
 GUI_UDREGPS_TAGS = {'UGPS1','UGPS2','UGPS3','UGPS4','UGPS5'};
@@ -107,7 +108,7 @@ GUI_GALILEO_TAG = 'GALILEOSELECT';
 GUI_GEO_TAGS = {'GEOpos1','GEOpos2','GEOpos3','GEOpos4','GEOpos5','GEOpos6',...
                 'GEOpos7','GEOpos8','GEOpos9','GEOpos10','GEOpos11'};          
 GUI_PAMODE_TAGS = {'PAmode','NPAmode'};
-GUI_OUT_TAGS = {'cbAvail','cbVHPL','cbUdremap','cbGivemap',...
+GUI_OUT_TAGS = {'cbAvail','cbVHPL','cbUdremap','cbGivemap','cbUIPEstats',...
                 'cbUdrehist','cbGivehist', 'cbCovAvail'};
 
 
@@ -116,7 +117,7 @@ GUI_OUT_TAGS = {'cbAvail','cbVHPL','cbUdremap','cbGivemap',...
 %default is first active one on the list
 
 %UDRE GPS buttons
-default=1;
+default=3; %index of default option
 for i = 1:length(GUI_UDREGPS_TAGS)
     GUI_UDREGPS_HNDL(i) = findobj('Tag',GUI_UDREGPS_TAGS{i});
     if(isempty(GUI_UDREGPS_ALGO{i}) || isempty(which(GUI_UDREGPS_ALGO{i})) || ...
@@ -124,15 +125,14 @@ for i = 1:length(GUI_UDREGPS_TAGS)
       set(GUI_UDREGPS_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_UDREGPS_HNDL(i), 'Enable', 'on', 'String', GUI_UDREGPS_MENU{i});
-      if (default)
+      if i == default
         set(GUI_UDREGPS_HNDL(i), 'Value', 1);
-        default=0;
-      end   
+      end
     end
 end
 
 %UDRE GEO buttons
-default=1;
+default=3;
 for i = 1:length(GUI_UDREGEO_TAGS)
     GUI_UDREGEO_HNDL(i) = findobj('Tag',GUI_UDREGEO_TAGS{i});
     if(isempty(GUI_UDREGEO_ALGO{i}) || isempty(which(GUI_UDREGEO_ALGO{i})) || ...
@@ -140,15 +140,14 @@ for i = 1:length(GUI_UDREGEO_TAGS)
       set(GUI_UDREGEO_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_UDREGEO_HNDL(i), 'Enable', 'on', 'String', GUI_UDREGEO_MENU{i});
-      if (default)
+      if i == default
         set(GUI_UDREGEO_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end
 
 %GIVE buttons
-default=1;
+default=4;
 for i = 1:length(GUI_GIVE_TAGS)
     GUI_GIVE_HNDL(i) = findobj('Tag',GUI_GIVE_TAGS{i});
     if(isempty(GUI_GIVE_ALGO{i}) || isempty(which(GUI_GIVE_ALGO{i})) || ...
@@ -156,9 +155,8 @@ for i = 1:length(GUI_GIVE_TAGS)
       set(GUI_GIVE_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_GIVE_HNDL(i), 'Enable', 'on', 'String', GUI_GIVE_MENU{i});
-      if (default)
+      if i == default
         set(GUI_GIVE_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end
@@ -169,23 +167,23 @@ if GUI_GIVE_MENU{i} == 'Dual Freq'
 end
 
 %IGP Mask buttons
-default=1;
+default=4;
 for i = 1:length(GUI_IGPMASK_TAGS)
     GUI_IGPMASK_HNDL(i) = findobj('Tag',GUI_IGPMASK_TAGS{i});
     if(isempty(GUI_IGPMASK_DAT{i}) || isempty(which(GUI_IGPMASK_DAT{i})))
       set(GUI_IGPMASK_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_IGPMASK_HNDL(i), 'Enable', 'on');
-      if (default)
+      if i == default
+        set(GUI_IGPMASK_HNDL(1), 'Value', 0);
         set(GUI_IGPMASK_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end
 
 
 %WRS CNMP buttons
-default=1;
+default=true;
 for i = 1:length(GUI_WRSCNMP_TAGS)
     GUI_WRSCNMP_HNDL(i) = findobj('Tag',GUI_WRSCNMP_TAGS{i});
     if(isempty(GUI_WRSCNMP_ALGO{i}) || isempty(which(GUI_WRSCNMP_ALGO{i})) || ...
@@ -193,7 +191,7 @@ for i = 1:length(GUI_WRSCNMP_TAGS)
       set(GUI_WRSCNMP_HNDL(i), 'Enable', 'off', 'Value', 0);
     else  
       set(GUI_WRSCNMP_HNDL(i), 'Enable', 'on');
-      if (default)
+      if default
         set(GUI_WRSCNMP_HNDL(i), 'Value', 1);
         default=0;
       end   
@@ -201,7 +199,7 @@ for i = 1:length(GUI_WRSCNMP_TAGS)
 end
 
 %user CNMP buttons
-default=1;
+default=true;
 for i = 1:length(GUI_USRCNMP_TAGS)
     GUI_USRCNMP_HNDL(i) = findobj('Tag',GUI_USRCNMP_TAGS{i});
     if(isempty(GUI_USRCNMP_ALGO{i}) || isempty(which(GUI_USRCNMP_ALGO{i})) || ...
@@ -217,16 +215,16 @@ for i = 1:length(GUI_USRCNMP_TAGS)
 end
 
 %WRS menu buttons 
-default=1;
+default=4;
 for i = 1:length(GUI_WRS_TAGS)
     GUI_WRS_HNDL(i) = findobj('Tag',GUI_WRS_TAGS{i});
     if(isempty(GUI_WRS_DAT{i}) || isempty(which(GUI_WRS_DAT{i})))
       set(GUI_WRS_HNDL(i), 'Enable', 'off', 'Value', 0, 'String', GUI_WRS_MENU{i});
     else  
       set(GUI_WRS_HNDL(i), 'Enable', 'on' ,'Value', 0, 'String', GUI_WRS_MENU{i});
-      if (default)
+      if i == default
+        set(GUI_WRS_HNDL(1), 'Value', 0);
         set(GUI_WRS_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end
@@ -235,16 +233,15 @@ for i = 1:length(GUI_WRSPB_TAGS)
 end
 
 %user menu buttons 
-default=1;
+default=6;
 for i = 1:length(GUI_USR_TAGS)
     GUI_USR_HNDL(i) = findobj('Tag',GUI_USR_TAGS{i});
     if(isempty(GUI_USR_DAT{i}) || isempty(which(GUI_USR_DAT{i})))
       set(GUI_USR_HNDL(i), 'Enable', 'off', 'Value', 0, 'String', GUI_USR_MENU{i});
     else  
       set(GUI_USR_HNDL(i), 'Enable', 'on', 'Value', 0, 'String', GUI_USR_MENU{i});
-      if (default)
+      if i == default
         set(GUI_USR_HNDL(i), 'Value', 1);
-        default=0;
       end   
     end
 end

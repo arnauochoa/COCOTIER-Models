@@ -1,4 +1,4 @@
-function vhpl=usr_vhpl(los_xyzb, usr_idx, sig2_i, prn, pa_mode)
+function [vhpl, G_usr, W_usr] =usr_vhpl(los_xyzb, usr_idx, sig2_i, prn, pa_mode)
 
 %*************************************************************************
 %*     Copyright c 2013 The board of trustees of the Leland Stanford     *
@@ -43,6 +43,9 @@ n_usr=max(usr_idx);
 vhpl=repmat(MOPS_NOT_MONITORED,n_usr,2);
 e=ones(50,1);
 
+G_usr = cell(n_usr, 1);
+W_usr = cell(n_usr, 1);
+
 for usr=1:n_usr
   sv_idx=find(usr_idx==usr);
   n_view=0;
@@ -69,6 +72,7 @@ for usr=1:n_usr
   % build the G matrix
   n_const = 0;
   G=[];
+  W=[];
   sview = [];
   if n_gps
       n_const = n_const+1;
@@ -122,7 +126,7 @@ for usr=1:n_usr
       G=[G; [los_xyzb(sv_idx(sgeo(s_good_geo)),:) ...
                                    zeros(n_good_geo,n_const-1)]];
       sview = [sview; sv_idx(sgeo(s_good_geo))];      
-  end  
+  end
   %check for minimum in view and geo visibility
   if((n_view>2+n_const && n_geo) || (TRUTH_FLAG == 1 && n_view > 3))
     W=diag(e(1:n_view)./sig2_i(sview));
@@ -138,6 +142,15 @@ for usr=1:n_usr
                                     Cov(1,2)*Cov(2,1)));                            
     end
   end
+  
+  % Save G and W to compute position error statistics
+  G_usr{usr} = G;
+  if isempty(W) && ~isempty(G)
+      W=diag(e(1:n_view)./sig2_i(sview));
+  end
+  W_usr{usr} = W;
+end
+
 end
 
 

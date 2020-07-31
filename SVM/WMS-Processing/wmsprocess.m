@@ -2,7 +2,7 @@ function [satdata,igpdata,wrs2satdata] = wmsprocess(alm_param, satdata,...
                             wrsdata, igpdata, wrs2satdata, gpsudrefun,...
                             geoudrefun, givefun, wrstrpfun, wrsgpscnmpfun,...
                             wrsgeocnmpfun, outputs, time, tstart, tstep,...
-                            trise, inv_igp_mask, truth_data, dual_freq)
+                            trise, inv_igp_mask, truth_data, give_mode)
                             
 %*************************************************************************
 %*     Copyright c 2013 The board of trustees of the Leland Stanford     *
@@ -32,7 +32,8 @@ global CNMP_TL3
 global MOPS_MIN_GPSPRN MOPS_MAX_GPSPRN MOPS_MIN_GLOPRN MOPS_MAX_GLOPRN 
 global MOPS_MIN_GALPRN MOPS_MAX_GALPRN MOPS_MIN_GEOPRN MOPS_MAX_GEOPRN
 global MOPS_MIN_BDUPRN MOPS_MAX_BDUPRN
-global TRUTH_FLAG CONST_R_E CONST_R_IONO;
+global TRUTH_FLAG CONST_R_E CONST_R_IONO
+global GIVE_MODE_DEFAULT GIVE_MODE_DUALFREQ GIVE_MODE_NSEMODEL
 
 nsat = size(satdata,1);
 nwrs = size(wrsdata,1);
@@ -148,7 +149,7 @@ satdata(sgnss,:) = feval(gpsudrefun, satdata(sgnss,:), wrsdata, ...
                         wrs2satdata(wgnss,:), 1);
 
 % give
-if(~dual_freq)
+if give_mode == GIVE_MODE_DEFAULT
     igpdata = feval(givefun, time, igpdata, wrsdata, satdata(sgnss,:), ...
                     wrs2satdata(wgnss,:), truth_data);
 
@@ -164,6 +165,6 @@ if(~dual_freq)
 end
 
 satdata(sgeo,:) = feval(geoudrefun, satdata(sgeo,:), wrsdata, ...
-                        wrs2satdata(wgeo,:), 1, dual_freq);
+                        wrs2satdata(wgeo,:), 1, give_mode);
 
 
