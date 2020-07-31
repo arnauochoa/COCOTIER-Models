@@ -93,7 +93,7 @@ end
 
 if outputs(GUI_OUT_GIVEMAP)
     % sort gives for each user and determine gives at given percentage
-    if isnan(IonoError)
+    if isempty(IonoError)
         if sum(sum(~isnan(givei)))
             nigp = size(givei,1);
             sortgive = zeros(size(givei));

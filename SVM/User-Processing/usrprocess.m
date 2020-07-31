@@ -91,7 +91,7 @@ sig_flt = NaN(nlos,1);      % Fast/Long-term variance
 % sig2_uire = NaN(nlos,1);    % User Ionospheric Range Error variance
 obl2 = NaN(nlos,1);         % Square of iono obliquity factor
 vhpl = NaN(nusr,2);         % Vertical and Horizontal Protection Level
-IonoError = NaN;                 % Structure to save Uire statistics in NSE model
+IonoError = [];             % Structure to save Uire statistics in NSE model
 
 [t1, t2]=meshgrid(1:nusr,1:nsat);
 usridx=reshape(t1,nlos,1);
@@ -260,8 +260,10 @@ if(~isempty(good_udre))
           vhpl(bad_usr,:)=NaN;
         end
         
-        % Compute mean and std of each user pos error due to iono
-        usrdata = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata);
+        if give_mode == GIVE_MODE_NSEMODEL
+            % Compute mean and std of each user pos error due to iono
+            usrdata = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata);
+        end
     end
 end
 

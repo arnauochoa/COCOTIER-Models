@@ -149,7 +149,7 @@ satdata(sgnss,:) = feval(gpsudrefun, satdata(sgnss,:), wrsdata, ...
                         wrs2satdata(wgnss,:), 1);
 
 % give
-if give_mode ~= GIVE_MODE_DUALFREQ
+if give_mode == GIVE_MODE_DEFAULT
     igpdata = feval(givefun, time, igpdata, wrsdata, satdata(sgnss,:), ...
                     wrs2satdata(wgnss,:), truth_data);
 
