@@ -20,7 +20,8 @@ global COL_SAT_PRN COL_SAT_XYZ COL_SAT_XYZB COL_SAT_XYZDOT COL_SAT_UDREI ...
 global COL_SAT_DXYZB COL_SAT_DXYZBDOT COL_SAT_FC COL_SAT_RRC    
 global COL_USR_UID COL_USR_XYZ COL_USR_LL COL_USR_LLH COL_USR_EHAT ...
         COL_USR_NHAT COL_USR_UHAT COL_USR_INBND COL_USR_MEX COL_USR_MAX ...
-        COL_USR_BIASIONO_ENUB COL_USR_SIG2IONO_ENUB
+        COL_USR_BIASIONO_ENUB COL_USR_SIG2IONO_ENUB ...
+        COL_USR_BIASCLKEPH_ENUB COL_USR_SIGCLKEPH_ENUB
 global COL_IGP_BAND COL_IGP_ID COL_IGP_LL COL_IGP_XYZ COL_IGP_WORKSET ...
         COL_IGP_EHAT COL_IGP_NHAT COL_IGP_MAGLAT COL_IGP_CORNERDEN ...
         COL_IGP_GIVEI COL_IGP_MINMON COL_IGP_UPMGIVEI COL_IGP_MAX ...
@@ -28,10 +29,12 @@ global COL_IGP_BAND COL_IGP_ID COL_IGP_LL COL_IGP_XYZ COL_IGP_WORKSET ...
         COL_IGP_DEGRAD COL_IGP_BIAS COL_IGP_STD
 global COL_U2S_UID COL_U2S_PRN COL_U2S_LOSXYZ COL_U2S_GXYZB ...
         COL_U2S_LOSENU COL_U2S_GENUB COL_U2S_EL COL_U2S_AZ ...
-        COL_U2S_SIGFLT COL_U2S_BIASUIRE COL_U2S_SIG2UIRE COL_U2S_OB2PP ...
+        COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIG2IONO COL_U2S_OB2PP ...
         COL_U2S_SIG2TRP COL_U2S_SIG2L1MP COL_U2S_SIG2L2MP COL_U2S_IPPLL ...
-        COL_U2S_IPPXYZ COL_U2S_TTRACK0 COL_U2S_IVPP COL_U2S_MAX ...
-        COL_U2S_INITNAN COL_U2S_BIASUIRE_ENU COL_U2S_SIG2UIRE_ENU
+        COL_U2S_IPPXYZ COL_U2S_TTRACK0 COL_U2S_IVPP ...
+        COL_U2S_BIASCLKEPH COL_U2S_SIGCLKEPH ... 
+        COL_U2S_MAX COL_U2S_INITNAN
+        
 
 % column numbers of specific data in SATDATA, WRSDATA, 
 %   USRDATA, IGPDATA, WRS2SATDATA, USR2SATDATA matrices
@@ -66,9 +69,11 @@ COL_USR_NHAT = 11:13;
 COL_USR_UHAT = 14:16;
 COL_USR_INBND = 17;
 COL_USR_MEX = 18;
-COL_USR_BIASIONO_ENUB = 19:22;      % UIRE mean projected onto ENU
-COL_USR_SIG2IONO_ENUB = 23:26;      % UIRE variance projected onto ENU
-COL_USR_MAX = 26;
+COL_USR_BIASIONO_ENUB = 19:22;      % Iono Error  mean projected onto ENUB
+COL_USR_SIG2IONO_ENUB = 23:26;      % Iono Error variance projected onto ENUB
+COL_USR_BIASCLKEPH_ENUB = 27:30;    % Clock+Eph Error mean projected onto ENUB
+COL_USR_SIGCLKEPH_ENUB = 31:34;    % Clock+Eph Error variance projected onto ENUB
+COL_USR_MAX = 34;
 
 % IGPDATA
 COL_IGP_BAND      = 1;
@@ -102,8 +107,8 @@ COL_U2S_GENUB = 6:9;            % LOS unit vector ENUB
 COL_U2S_EL = 10;                % Satellite elevation wrt. user
 COL_U2S_AZ = 11;                % Satellite azimuth wrt. user
 COL_U2S_SIGFLT = 12;            % Fast/Long-term variance
-COL_U2S_BIASUIRE = 13;          % UIRE mean
-COL_U2S_SIG2UIRE = 14;          % UIRE variance
+COL_U2S_BIASIONO = 13;          % UIRE mean
+COL_U2S_SIG2IONO = 14;          % UIRE variance
 COL_U2S_OB2PP = 15;             % Obliquity factor squared
 COL_U2S_SIG2TRP = 16;           % Tropo variance
 COL_U2S_SIG2L1MP = 17;          % CNMP for L1
@@ -112,8 +117,8 @@ COL_U2S_IPPLL = 19:20;          % IPP Lat Lon
 COL_U2S_IPPXYZ = 21:23;         % IPP XYZ
 COL_U2S_TTRACK0 = 24;           % Start time
 COL_U2S_IVPP = 25;              %
-COL_U2S_BIASUIRE_ENU = 26:28;   % UIRE mean projected onto ENU
-COL_U2S_SIG2UIRE_ENU = 29:31;   % UIRE variance projected onto ENU
-COL_U2S_MAX = 31;               % Num of columns
-COL_U2S_INITNAN = 3:31;         % Columpns to initialize as NaN
+COL_U2S_BIASCLKEPH = 26;        % UIRE mean
+COL_U2S_SIGCLKEPH = 27;         % UIRE variance
+COL_U2S_MAX = 27;               % Num of columns
+COL_U2S_INITNAN = 3:27;         % Columns to initialize as NaN
 

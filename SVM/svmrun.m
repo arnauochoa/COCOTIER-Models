@@ -55,13 +55,13 @@ function svmrun(gpsudrefun, geoudrefun, givefun, usrcnmpfun,...
 %    use broadcast 250 bit messages in place of emulating the WMS
 global COL_SAT_UDREI COL_SAT_DEGRAD COL_SAT_XYZ COL_SAT_MINMON
 global COL_IGP_GIVEI COL_IGP_MINMON COL_IGP_BETA COL_IGP_DEGRAD COL_IGP_CHI2RATIO
-global COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND 
-global COL_USR_BIASIONO_ENUB COL_USR_SIG2IONO_ENUB
-global COL_U2S_SIGFLT COL_U2S_BIASUIRE COL_U2S_SIG2UIRE COL_U2S_OB2PP COL_U2S_UID  COL_U2S_GENUB
-global HIST_UDRE_NBINS HIST_GIVE_NBINS HIST_UDRE_EDGES HIST_GIVE_EDGES
-global HIST_UDREI_NBINS HIST_GIVEI_NBINS HIST_UDREI_EDGES HIST_GIVEI_EDGES
-global MOPS_SIN_USRMASK MOPS_SIN_WRSMASK MOPS_NOT_MONITORED
-global MOPS_UDREI_NM MOPS_GIVEI_NM
+global COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND ...
+        COL_USR_BIASIONO_ENUB COL_USR_SIG2IONO_ENUB ...
+        COL_USR_BIASCLKEPH_ENUB COL_USR_SIGCLKEPH_ENUB
+global COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIG2IONO COL_U2S_OB2PP COL_U2S_UID  COL_U2S_GENUB
+global HIST_UDRE_NBINS HIST_GIVE_NBINS HIST_UDRE_EDGES HIST_GIVE_EDGES ...
+        HIST_UDREI_NBINS HIST_GIVEI_NBINS HIST_UDREI_EDGES HIST_GIVEI_EDGES
+global MOPS_SIN_USRMASK MOPS_SIN_WRSMASK MOPS_NOT_MONITORED MOPS_UDREI_NM MOPS_GIVEI_NM
 global CNMP_TL3
 
 global SBAS_MESSAGE_FILE
@@ -161,7 +161,9 @@ sat_xyz=[];
 nUser = size(usrdata, 1); nDim = 4;
 % initialize pos iono error mean and std
 iono_mean_enub = nan(nUser, nDim, ntstep);
-iono_sig2_enub = nan(nUser, nDim, ntstep);
+iono_sig_enub = nan(nUser, nDim, ntstep);
+clkeph_mean_enub = nan(nUser, nDim, ntstep);
+clkeph_sig_enub = nan(nUser, nDim, ntstep);
 
 if TRUTH_FLAG
    truth_matrix=load_truth(wrsdata, satdata);
@@ -234,14 +236,16 @@ while tcurr<=tend
     sat_xyz = [sat_xyz; satdata(:,COL_SAT_XYZ)];
 
     % USER processing
-    [vhpl, usr2satdata, IonoError, usrdata] = usrprocess(satdata, usrdata, igpdata, ...
+    [vhpl, usr2satdata, usrdata, IonoError, ClockEphError] = ...
+                            usrprocess(satdata, usrdata, igpdata, ...
                                inv_igp_mask, usr2satdata, usrtrpfun, ...
                                usrcnmpfun, tcurr, pa_mode, give_mode, ...
                                rss_udre, rss_iono);
     iono_mean_enub(:, :, itstep) = usrdata(:, COL_USR_BIASIONO_ENUB);
-    iono_sig2_enub(:, :, itstep) = usrdata(:, COL_USR_SIG2IONO_ENUB);
-
-                           
+    iono_sig_enub(:, :, itstep) = usrdata(:, COL_USR_SIG2IONO_ENUB);
+    clkeph_mean_enub(:, :, itstep) = usrdata(:, COL_USR_BIASCLKEPH_ENUB);
+    clkeph_sig_enub(:, :, itstep) = usrdata(:, COL_USR_SIGCLKEPH_ENUB);
+    
     vpl(:,itstep) = vhpl(:,1);
     hpl(:,itstep) = vhpl(:,2);
 
@@ -256,8 +260,8 @@ while tcurr<=tend
                                 sum(isnan(sig_flt(hist_idx)) | ...
                                     sig_flt(hist_idx) == MOPS_NOT_MONITORED);
     % GIVE Histogram
-    mu_uive = usr2satdata(:, COL_U2S_BIASUIRE)./usr2satdata(:, COL_U2S_OB2PP);
-    sig2_uive = usr2satdata(:, COL_U2S_SIG2UIRE)./usr2satdata(:, COL_U2S_OB2PP);
+    mu_uive = usr2satdata(:, COL_U2S_BIASIONO)./usr2satdata(:, COL_U2S_OB2PP);
+    sig2_uive = usr2satdata(:, COL_U2S_SIG2IONO)./usr2satdata(:, COL_U2S_OB2PP);
 	give_hist(1:HIST_GIVE_NBINS) = give_hist(1:HIST_GIVE_NBINS) + ...
                                    svm_hist(mu_uive(hist_idx) + 3.29*sqrt(sig2_uive(hist_idx)),... % 3.29 is for 90% (?)
 	                                        HIST_GIVE_EDGES);
@@ -283,12 +287,12 @@ end
 save 'outputs' satdata usrdata wrsdata igpdata inv_igp_mask sat_xyz udrei ...
                givei vpl hpl usrlatgrid usrlongrid udre_hist give_hist ...
 		       udrei_hist givei_hist nm_igp_hist betai chi2ratioi usr2satdata ...
-               IonoError iono_mean_enub iono_sig2_enub;
+               IonoError iono_mean_enub iono_sig_enub ClockEphError clkeph_mean_enub clkeph_sig_enub;
 % OUTPUT processing
 outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,sat_xyz,udrei,...
               givei,vpl,hpl,usrlatgrid,usrlongrid,outputs,percent,vhal,...
               pa_mode,udre_hist,give_hist,udrei_hist,givei_hist, IonoError, ...
-              iono_mean_enub, iono_sig2_enub);
+              iono_mean_enub, iono_sig_enub, ClockEphError, clkeph_mean_enub, clkeph_sig_enub);
 
 
 
