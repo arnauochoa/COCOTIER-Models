@@ -82,14 +82,10 @@ GUI_GEO_DAT = {'GEO1','GEO2','GEO3','GEO4','GEO5','GEO6','GEO7','GEO8','GEO9',..
                'GEO10','GEO11'};
 
 % Outputs
-GUI_OUT_AVAIL = 1;
-GUI_OUT_VHPL = 2;
-GUI_OUT_UDREMAP = 3;
-GUI_OUT_GIVEMAP = 4;
-GUI_OUT_UIPESTATS = 5;
-GUI_OUT_UDREHIST = 6;
-GUI_OUT_GIVEHIST = 7;
-GUI_OUT_COVAVAIL = 8;
+GUI_OUT_UDREMAP = 1;
+GUI_OUT_UDREHIST = 2;
+GUI_OUT_GIVEMAP = 3;
+GUI_OUT_UIPESTATS = 4;
 
 % tag fields for buttons
 GUI_UDREGPS_TAGS = {'UGPS1','UGPS2','UGPS3','UGPS4','UGPS5'};
@@ -108,8 +104,7 @@ GUI_GALILEO_TAG = 'GALILEOSELECT';
 GUI_GEO_TAGS = {'GEOpos1','GEOpos2','GEOpos3','GEOpos4','GEOpos5','GEOpos6',...
                 'GEOpos7','GEOpos8','GEOpos9','GEOpos10','GEOpos11'};          
 GUI_PAMODE_TAGS = {'PAmode','NPAmode'};
-GUI_OUT_TAGS = {'cbAvail','cbVHPL','cbUdremap','cbGivemap','cbUIPEstats',...
-                'cbUdrehist','cbGivehist', 'cbCovAvail'};
+GUI_OUT_TAGS = {'cbUdremap','cbGivemap','cbUIPEstats','cbUdrehist'};
 
 
 % handles for buttons

@@ -16,10 +16,10 @@ global GRAPH_GIVEI_COLORS
 global GRAPH_LL_WORLD GRAPH_LL_STATE
 global OUTPUT_BIAS_LABEL OUTPUT_STD_LABEL OUTPUT_VAR_LABEL
 global COL_USR_LL
-global GIVE_NSE_STATIONSFILE
+global IONO_NSE_STATIONSFILE
 
 % Load ECAC stations positions
-load(GIVE_NSE_STATIONSFILE, 'ECAC_pos');
+load(IONO_NSE_STATIONSFILE, 'ECAC_pos');
 
 % Set variables specific to each statistic
 switch statType

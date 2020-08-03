@@ -17,7 +17,7 @@
 % 2001 Sept
 % Stanford University WADGPS Lab
 
-clear all;
+clear;
 close all;
 
 addpath(genpath('Data'));

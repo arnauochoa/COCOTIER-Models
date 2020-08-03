@@ -35,7 +35,7 @@ global TRUTH_FLAG TRUTH_FILE SETTINGS_TR_FILE
 global SETTINGS_BR_HNDL SETTINGS_BR_FILE SETTINGS_BR_DAT
 global GUISET_RUN_HNDL BRAZPARAMS RTR_FLAG IPP_SPREAD_FLAG
 global MOPS_VAL MOPS_HAL MOPS_NPA_HAL
-global GIVE_NSE_RESULTSFILE GIVE_NSE_STATIONSFILE
+global IONO_NSE_RESULTSFILE IONO_NSE_STATIONSFILE
 global GIVE_MODE_DEFAULT GIVE_MODE_DUALFREQ GIVE_MODE_NSEMODEL
 
 if ismember(hndl,GUI_UDREGPS_HNDL)
@@ -211,13 +211,13 @@ else   % Other non-option buttons
         end
         % check give NSE model files
         if strcmp(givefun,'af_give_nsemodel')
-            if isempty(GIVE_NSE_RESULTSFILE) || isempty(GIVE_NSE_STATIONSFILE)
-                error('GIVE NSE files not defined');
+            if isempty(IONO_NSE_RESULTSFILE) || isempty(IONO_NSE_STATIONSFILE)
+                error('Iono error files for NSE not defined');
             else
-                if ~exist(GIVE_NSE_RESULTSFILE, 'file')
-                    error('GIVE NSE results file does not exist');
-                elseif ~exist(GIVE_NSE_STATIONSFILE, 'file')
-                    error('GIVE NSE stations file does not exist');
+                if ~exist(IONO_NSE_RESULTSFILE, 'file')
+                    error('Iono error results file for NSE does not exist');
+                elseif ~exist(IONO_NSE_STATIONSFILE, 'file')
+                    error('Iono error stations file for NSE does not exist');
                 end
             end
         end
