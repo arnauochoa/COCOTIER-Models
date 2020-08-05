@@ -56,9 +56,9 @@ function svmrun(gpsudrefun, geoudrefun, givefun, usrcnmpfun,...
 global COL_SAT_UDREI COL_SAT_DEGRAD COL_SAT_XYZ COL_SAT_MINMON
 global COL_IGP_GIVEI COL_IGP_MINMON COL_IGP_BETA COL_IGP_DEGRAD COL_IGP_CHI2RATIO
 global COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND ...
-        COL_USR_BIASIONO_ENUB COL_USR_SIG2IONO_ENUB ...
+        COL_USR_BIASIONO_ENUB COL_USR_SIGIONO_ENUB ...
         COL_USR_BIASCLKEPH_ENUB COL_USR_SIGCLKEPH_ENUB
-global COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIG2IONO COL_U2S_OB2PP COL_U2S_UID  COL_U2S_GENUB
+global COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIGIONO COL_U2S_OB2PP COL_U2S_UID  COL_U2S_GENUB
 global HIST_UDRE_NBINS HIST_GIVE_NBINS HIST_UDRE_EDGES HIST_GIVE_EDGES ...
         HIST_UDREI_NBINS HIST_GIVEI_NBINS HIST_UDREI_EDGES HIST_GIVEI_EDGES
 global MOPS_SIN_USRMASK MOPS_SIN_WRSMASK MOPS_NOT_MONITORED MOPS_UDREI_NM MOPS_GIVEI_NM
@@ -242,7 +242,7 @@ while tcurr<=tend
                                usrcnmpfun, tcurr, pa_mode, give_mode, ...
                                rss_udre, rss_iono);
     iono_mean_enub(:, :, itstep) = usrdata(:, COL_USR_BIASIONO_ENUB);
-    iono_sig_enub(:, :, itstep) = usrdata(:, COL_USR_SIG2IONO_ENUB);
+    iono_sig_enub(:, :, itstep) = usrdata(:, COL_USR_SIGIONO_ENUB);
     clkeph_mean_enub(:, :, itstep) = usrdata(:, COL_USR_BIASCLKEPH_ENUB);
     clkeph_sig_enub(:, :, itstep) = usrdata(:, COL_USR_SIGCLKEPH_ENUB);
     
@@ -261,7 +261,7 @@ while tcurr<=tend
                                     sig_flt(hist_idx) == MOPS_NOT_MONITORED);
     % GIVE Histogram
     mu_uive = usr2satdata(:, COL_U2S_BIASIONO)./usr2satdata(:, COL_U2S_OB2PP);
-    sig2_uive = usr2satdata(:, COL_U2S_SIG2IONO)./usr2satdata(:, COL_U2S_OB2PP);
+    sig2_uive = (usr2satdata(:, COL_U2S_SIGIONO).^2)./usr2satdata(:, COL_U2S_OB2PP);
 	give_hist(1:HIST_GIVE_NBINS) = give_hist(1:HIST_GIVE_NBINS) + ...
                                    svm_hist(mu_uive(hist_idx) + 3.29*sqrt(sig2_uive(hist_idx)),... % 3.29 is for 90% (?)
 	                                        HIST_GIVE_EDGES);

@@ -397,10 +397,3 @@ else   % Other non-option buttons
     end
 end    
 
-
-
-
-
-
-
-
