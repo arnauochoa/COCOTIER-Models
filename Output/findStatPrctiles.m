@@ -6,7 +6,6 @@ prctile_iono_mean_enub = nan(nUser, nDim);
 prctile_iono_std_enub = nan(nUser, nDim);
 
 % Indices of diagonal in reshaped cov matrix
-% varIndices = 1:nDim+1:nDim^2;
 
 for iUser = 1:nUser
     % Find mean percentile for each dimension

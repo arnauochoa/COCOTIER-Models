@@ -1,7 +1,7 @@
 function outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,...
                        sat_xyz,udrei,givei,usrvpl,usrhpl,latgrid,...
 					   longrid,outputs,percent,vhal,pa_mode,udre_hist,give_hist,...
-					   udrei_hist,givei_hist, IonoError, iono_mean_enub, iono_sig2_enub,...
+					   udrei_hist,givei_hist, IonoError, iono_mean_enub, iono_sig_enub,...
                        ClockEphError, clkeph_mean_enub, clkeph_sig_enub)
 %*************************************************************************
 %*     Copyright c 2007 The board of trustees of the Leland Stanford     *
@@ -98,9 +98,9 @@ end
 
 if outputs(GUI_OUT_UIPESTATS)
     % Iono ENU error maps
-    if sum(~isnan(iono_mean_enub), 'all') && sum(~isnan(iono_sig2_enub), 'all')
+    if sum(~isnan(iono_mean_enub), 'all') && sum(~isnan(iono_sig_enub), 'all')
         dimensions = {'EAST', 'NORTH', 'UP', 'CLOCK'};
-        [prctile_iono_mean_enub, prctile_iono_std_enub] = findStatPrctiles(iono_mean_enub, iono_sig2_enub, percent);
+        [prctile_iono_mean_enub, prctile_iono_std_enub] = findStatPrctiles(iono_mean_enub, iono_sig_enub, percent);
         for iDim = 1:length(dimensions)
             % Mean
             h = figure(GRAPH_IONOMEANENUMAP_FIGNO(iDim));
@@ -117,7 +117,7 @@ if outputs(GUI_OUT_UIPESTATS)
         end
         
         % Histograms
-        plotStatHistograms(usrdata(:, COL_USR_LL), iono_mean_enub, iono_sig2_enub, OUTPUT_IONO_LABEL)
+        plotStatHistograms(usrdata(:, COL_USR_LL), iono_mean_enub, iono_sig_enub, OUTPUT_IONO_LABEL)
     end
 end
 
@@ -147,7 +147,7 @@ if outputs(GUI_OUT_UDREHIST)
 
     if sum(~isnan(clkeph_mean_enub), 'all') && sum(~isnan(clkeph_sig_enub), 'all')
         dimensions = {'EAST', 'NORTH', 'UP', 'CLOCK'};
-        [prctile_clkeph_mean_enub, prctile_clkeph_std_enub] = findStatPrctiles(clkeph_mean_enub, clkeph_sig_enub.^2, percent);
+        [prctile_clkeph_mean_enub, prctile_clkeph_std_enub] = findStatPrctiles(clkeph_mean_enub, clkeph_sig_enub, percent);
         for iDim = 1:length(dimensions)
             % Mean
             h = figure(GRAPH_CLKEPHMEANENUMAP_FIGNO(iDim));
@@ -166,6 +166,8 @@ if outputs(GUI_OUT_UDREHIST)
         % Histograms
         plotStatHistograms(usrdata(:, COL_USR_LL), clkeph_mean_enub, clkeph_sig_enub, OUTPUT_CLKEPH_LABEL)
     end
+end
+
 end
 
 

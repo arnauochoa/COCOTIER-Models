@@ -61,7 +61,7 @@ for iElev = 1:length(elBins)-1
         for i = 1:length(goodLosInBin)
             % Find user position
             userLL = usrdata(usrdata(:, COL_USR_UID) == usr2satdata(goodLosInBin(i), COL_U2S_UID), COL_USR_LL);
-
+            
             % assign mean and std to los
             usr2satdata(goodLosInBin(i), COL_U2S_BIASCLKEPH) = meanInterp(userLL(1), userLL(2));
             usr2satdata(goodLosInBin(i), COL_U2S_SIGCLKEPH) = stdInterp(userLL(1), userLL(2));

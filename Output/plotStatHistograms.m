@@ -1,4 +1,4 @@
-function [] = plotStatHistograms(userLL, error_mean_enub, error_sig2_enub, errorType)
+function [] = plotStatHistograms(userLL, error_mean_enub, error_sig_enub, errorType)
 
 global OUTPUT_IONO_LABEL OUTPUT_CLKEPH_LABEL
 global GRAPH_IONOHIST_FIGNO GRAPH_CLKEPHHIST_FIGNO;
@@ -30,8 +30,7 @@ for iPos = 1:nPos
     % Mean
     pos_error_mean_enub = permute(error_mean_enub(posIdx(iPos), :, :), [3 2 1]);
     % Standard deviation
-    pos_error_sig2_enub = permute(error_sig2_enub(posIdx(iPos), :, :), [3 2 1]);
-    pos_error_std_enub = sqrt(abs(pos_error_sig2_enub));
+    pos_error_std_enub = permute(error_sig_enub(posIdx(iPos), :, :), [3 2 1]);
     
     nSamples = size(pos_error_mean_enub, 1);
     

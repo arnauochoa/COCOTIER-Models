@@ -4,7 +4,7 @@ function [usrdata] = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata)
 
 global COL_U2S_UID COL_U2S_BIASIONO COL_U2S_SIG2IONO ...
         COL_U2S_BIASCLKEPH COL_U2S_SIGCLKEPH
-global COL_USR_UID COL_USR_LL COL_USR_BIASIONO_ENUB COL_USR_SIG2IONO_ENUB ...
+global COL_USR_UID COL_USR_LL COL_USR_BIASIONO_ENUB COL_USR_SIGIONO_ENUB ...
         COL_USR_BIASCLKEPH_ENUB COL_USR_SIGCLKEPH_ENUB
 
 nUser = size(usrdata, 1);
@@ -33,12 +33,12 @@ for iUser = 1:nUser
         usrdata(iUser, COL_USR_BIASIONO_ENUB) = ionoMean_enub';
 
         % Find Covariance of iono error in ENUB
-        R = diag(usr2satdata(iLos, COL_U2S_SIG2IONO));
+        R = diag(usr2satdata(iLos, COL_U2S_SIG2IONO).^2);
         ionoCov_xyzb = S * R * S';
         ionoVar_xyzb = diag(ionoCov_xyzb);
         ionoStd_xyzb = sqrt(ionoVar_xyzb);
         ionoStd_enub = Rot * ionoStd_xyzb;
-        usrdata(iUser, COL_USR_SIG2IONO_ENUB) = ionoStd_enub';
+        usrdata(iUser, COL_USR_SIGIONO_ENUB) = ionoStd_enub';
         
         %% Clock+ephemeris error
         % Find mean of clk+eph error in ENUB

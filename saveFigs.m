@@ -1,4 +1,4 @@
-FolderName = '../Fig/test25/';   % Your destination folder
+FolderName = '../Fig/meeting_8-6/clkeph_slantErr/';   % Your destination folder
 if ~exist(FolderName, 'dir')
        mkdir(FolderName)
 end
@@ -9,3 +9,4 @@ for iFig = 1:length(FigList)
   saveas(FigHandle, fullfile(FolderName, [FigName, '.png']));
 %   saveas(FigHandle, fullfile(FolderName, [FigName, '.fig']));
 end
+close all
