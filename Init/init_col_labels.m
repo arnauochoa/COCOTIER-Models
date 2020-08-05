@@ -29,7 +29,7 @@ global COL_IGP_BAND COL_IGP_ID COL_IGP_LL COL_IGP_XYZ COL_IGP_WORKSET ...
         COL_IGP_DEGRAD COL_IGP_BIAS COL_IGP_STD
 global COL_U2S_UID COL_U2S_PRN COL_U2S_LOSXYZ COL_U2S_GXYZB ...
         COL_U2S_LOSENU COL_U2S_GENUB COL_U2S_EL COL_U2S_AZ ...
-        COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIG2IONO COL_U2S_OB2PP ...
+        COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIGIONO COL_U2S_SIG2IONO COL_U2S_OB2PP ...
         COL_U2S_SIG2TRP COL_U2S_SIG2L1MP COL_U2S_SIG2L2MP COL_U2S_IPPLL ...
         COL_U2S_IPPXYZ COL_U2S_TTRACK0 COL_U2S_IVPP ...
         COL_U2S_BIASCLKEPH COL_U2S_SIGCLKEPH ... 
@@ -108,17 +108,18 @@ COL_U2S_EL = 10;                % Satellite elevation wrt. user
 COL_U2S_AZ = 11;                % Satellite azimuth wrt. user
 COL_U2S_SIGFLT = 12;            % Fast/Long-term variance
 COL_U2S_BIASIONO = 13;          % UIRE mean
-COL_U2S_SIG2IONO = 14;          % UIRE variance
-COL_U2S_OB2PP = 15;             % Obliquity factor squared
-COL_U2S_SIG2TRP = 16;           % Tropo variance
-COL_U2S_SIG2L1MP = 17;          % CNMP for L1
-COL_U2S_SIG2L2MP = 18;          % CNMP for L1
-COL_U2S_IPPLL = 19:20;          % IPP Lat Lon
-COL_U2S_IPPXYZ = 21:23;         % IPP XYZ
-COL_U2S_TTRACK0 = 24;           % Start time
-COL_U2S_IVPP = 25;              %
-COL_U2S_BIASCLKEPH = 26;        % UIRE mean
-COL_U2S_SIGCLKEPH = 27;         % UIRE variance
-COL_U2S_MAX = 27;               % Num of columns
-COL_U2S_INITNAN = 3:27;         % Columns to initialize as NaN
+COL_U2S_SIGIONO = 14;          % UIRE variance
+COL_U2S_SIG2IONO = 15;          % UIRE variance
+COL_U2S_OB2PP = 16;             % Obliquity factor squared
+COL_U2S_SIG2TRP = 17;           % Tropo variance
+COL_U2S_SIG2L1MP = 18;          % CNMP for L1
+COL_U2S_SIG2L2MP = 19;          % CNMP for L1
+COL_U2S_IPPLL = 20:21;          % IPP Lat Lon
+COL_U2S_IPPXYZ = 22:24;         % IPP XYZ
+COL_U2S_TTRACK0 = 25;           % Start time
+COL_U2S_IVPP = 26;              %
+COL_U2S_BIASCLKEPH = 27;        % UIRE mean
+COL_U2S_SIGCLKEPH = 28;         % UIRE variance
+COL_U2S_MAX = 28;               % Num of columns
+COL_U2S_INITNAN = 3:28;         % Columns to initialize as NaN
 

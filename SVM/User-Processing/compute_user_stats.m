@@ -36,7 +36,6 @@ for iUser = 1:nUser
         R = diag(usr2satdata(iLos, COL_U2S_SIG2IONO));
         ionoCov_xyzb = S * R * S';
         ionoVar_xyzb = diag(ionoCov_xyzb);
-        ionoVar_xyzb = max(ionoVar_xyzb, 0); % remove negative values due to interpolation
         ionoStd_xyzb = sqrt(ionoVar_xyzb);
         ionoStd_enub = Rot * ionoStd_xyzb;
         usrdata(iUser, COL_USR_SIG2IONO_ENUB) = ionoStd_enub';
@@ -48,10 +47,9 @@ for iUser = 1:nUser
         usrdata(iUser, COL_USR_BIASCLKEPH_ENUB) = clkephMean_enub';
 
         % Find Covariance of clk+eph error in ENUB
-        R = diag(usr2satdata(iLos, COL_U2S_SIGCLKEPH));
+        R = diag(usr2satdata(iLos, COL_U2S_SIGCLKEPH).^2);
         clkephCov_xyzb = S * R * S';
         clkephVar_xyzb = diag(clkephCov_xyzb);
-        clkephVar_xyzb = max(clkephVar_xyzb, 0); % remove negative values due to interpolation
         clkephStd_xyzb = sqrt(clkephVar_xyzb);
         clkephStd_enub = Rot * clkephStd_xyzb;
         usrdata(iUser, COL_USR_SIGCLKEPH_ENUB) = clkephStd_enub';
