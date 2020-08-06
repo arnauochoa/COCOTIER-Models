@@ -60,7 +60,6 @@ end
 shading flat
 hold on
 
-
 if(length(cnt_int)<20)
   H=colorb(cnt_int, tick_text, loc);
 else

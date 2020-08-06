@@ -34,5 +34,7 @@ init_labels
 %init_hist;       % histogram parameters
 
 % launch GUI Control Panel
-maastgui;
-init_gui;    % read algorithm .m files in directory and form menu (global)
+cocogui;
+init_coco_gui;
+% maastgui;
+% init_gui;    % read algorithm .m files in directory and form menu (global)

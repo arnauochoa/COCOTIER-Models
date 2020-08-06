@@ -37,6 +37,8 @@ global GRAPH_UDREI_COLORS GRAPH_GIVEI_COLORS
 
 global GRAPH_LL_WORLD GRAPH_LL_STATE
 
+global MOPS_GIVEI_MAX MOPS_GIVEI_NM% used to define colormap
+
 
 GRAPH_AVAIL_FIGNO    = 5;
 GRAPH_VPL_FIGNO      = 6;
@@ -102,22 +104,8 @@ GRAPH_AVAIL_CONTOURS = [0 50 75 85 90 95 99 99.5 99.9]/100;
 GRAPH_AVAIL_COLORS   = flipud(GRAPH_VPL_COLORS);
 
 
-GRAPH_UDREI_COLORS   = [[GRAPH_DEEP_PURPLE];
-                        [GRAPH_DARK_PURPLE];
-                        [GRAPH_LIGHT_PURPLE];
-                        [GRAPH_DARK_BLUE];
-                        [GRAPH_LIGHT_BLUE];
-                        [GRAPH_CYAN];
-                        [GRAPH_AQUA];
-                        [GRAPH_DARK_GREEN];
-                        [GRAPH_LIGHT_GREEN];
-                        [GRAPH_LIME];
-                        [GRAPH_YELLOW];
-                        [GRAPH_MUSTARD];
-                        [GRAPH_ORANGE];
-                        [GRAPH_MAGENTA];
-                        [GRAPH_RED];
-                        [GRAPH_DARK_RED]];
+GRAPH_UDREI_COLORS   = colormap(jet(MOPS_GIVEI_MAX));
+GRAPH_UDREI_COLORS(MOPS_GIVEI_NM, :) = [0.23 0.23 0.23];
 
 GRAPH_GIVEI_COLORS   = GRAPH_UDREI_COLORS;
 
