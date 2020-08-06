@@ -1,4 +1,4 @@
-FolderName = '../Fig/meeting_8-6/clkeph_slantErr/';   % Your destination folder
+FolderName = '../Fig/meeting_8-6_2/iono_posErr/';   % Your destination folder
 if ~exist(FolderName, 'dir')
        mkdir(FolderName)
 end

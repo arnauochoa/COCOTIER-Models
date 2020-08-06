@@ -42,16 +42,16 @@ for iUser = 1:nUser
         
         %% Clock+ephemeris error
         % Find mean of clk+eph error in ENUB
-        clkephMean_enub = S * usr2satdata(iLos, COL_U2S_BIASCLKEPH);
-%         clkephMean_enub = Rot * clkephMean_xyzb;
+        clkephMean_enb = S * usr2satdata(iLos, COL_U2S_BIASCLKEPH);
+        clkephMean_enub = Rot * clkephMean_xyzb;
         usrdata(iUser, COL_USR_BIASCLKEPH_ENUB) = clkephMean_enub';
 
         % Find Covariance of clk+eph error in ENUB
         R = diag(usr2satdata(iLos, COL_U2S_SIGCLKEPH).^2);
-        clkephCov_enub = S * R * S';
-        clkephVar_enub = diag(clkephCov_enub);
-        clkephStd_enub = sqrt(clkephVar_enub);
-%         clkephStd_enub = Rot * clkephStd_xyzb;
+        clkephCov_xyzb = S * R * S';
+        clkephVar_xyzb = diag(clkephCov_xyzb);
+        clkephStd_xyzb = sqrt(clkephVar_xyzb);
+        clkephStd_enub = Rot * clkephStd_xyzb;
         usrdata(iUser, COL_USR_SIGCLKEPH_ENUB) = clkephStd_enub';
     end
 end
