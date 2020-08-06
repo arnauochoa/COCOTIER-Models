@@ -367,9 +367,11 @@ else   % Other non-option buttons
         elseif hndl==GUI_PLOT_HNDL
             % plots only
             load 'outputs';
-            outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,...
-                sat_xyz,udrei,givei,vpl,hpl,usrlatgrid,usrlongrid,outputs,...
-				percent,vhal,pa_mode,udre_hist,give_hist,udrei_hist,givei_hist);
+            outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,sat_xyz,udrei,...
+                      givei,vpl,hpl,usrlatgrid,usrlongrid,outputs,percent,vhal,...
+                      pa_mode,udre_hist,give_hist,udrei_hist,givei_hist, IonoError, ...
+                      iono_mean_enub, iono_sig_enub, ClockEphError, clkeph_mean_enub, ...
+                      clkeph_sig_enub, total_mean_enub, total_sig_enub);
         elseif hndl==GUI_WRSPB_HNDL(1)
             %list WRSs
             fid=fopen(wrsfile,'r');
@@ -396,11 +398,4 @@ else   % Other non-option buttons
         disp('Function not yet operational.');
     end
 end    
-
-
-
-
-
-
-
 

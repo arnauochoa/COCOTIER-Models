@@ -56,8 +56,9 @@ function svmrun(gpsudrefun, geoudrefun, givefun, usrcnmpfun,...
 global COL_SAT_UDREI COL_SAT_DEGRAD COL_SAT_XYZ COL_SAT_MINMON
 global COL_IGP_GIVEI COL_IGP_MINMON COL_IGP_BETA COL_IGP_DEGRAD COL_IGP_CHI2RATIO
 global COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND ...
-        COL_USR_BIASIONO_ENUB COL_USR_SIG2IONO_ENUB ...
-        COL_USR_BIASCLKEPH_ENUB COL_USR_SIGCLKEPH_ENUB
+        COL_USR_BIASIONO_ENUB COL_USR_SIGIONO_ENUB ...
+        COL_USR_BIASCLKEPH_ENUB COL_USR_SIGCLKEPH_ENUB ...
+        COL_USR_BIASTOTAL_ENUB COL_USR_SIGTOTAL_ENUB
 global COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIG2IONO COL_U2S_OB2PP COL_U2S_UID  COL_U2S_GENUB
 global HIST_UDRE_NBINS HIST_GIVE_NBINS HIST_UDRE_EDGES HIST_GIVE_EDGES ...
         HIST_UDREI_NBINS HIST_GIVEI_NBINS HIST_UDREI_EDGES HIST_GIVEI_EDGES
@@ -164,6 +165,8 @@ iono_mean_enub = nan(nUser, nDim, ntstep);
 iono_sig_enub = nan(nUser, nDim, ntstep);
 clkeph_mean_enub = nan(nUser, nDim, ntstep);
 clkeph_sig_enub = nan(nUser, nDim, ntstep);
+total_mean_enub = nan(nUser, nDim, ntstep);
+total_sig_enub = nan(nUser, nDim, ntstep);
 
 if TRUTH_FLAG
    truth_matrix=load_truth(wrsdata, satdata);
@@ -242,9 +245,11 @@ while tcurr<=tend
                                usrcnmpfun, tcurr, pa_mode, give_mode, ...
                                rss_udre, rss_iono);
     iono_mean_enub(:, :, itstep) = usrdata(:, COL_USR_BIASIONO_ENUB);
-    iono_sig_enub(:, :, itstep) = usrdata(:, COL_USR_SIG2IONO_ENUB);
+    iono_sig_enub(:, :, itstep) = usrdata(:, COL_USR_SIGIONO_ENUB);
     clkeph_mean_enub(:, :, itstep) = usrdata(:, COL_USR_BIASCLKEPH_ENUB);
     clkeph_sig_enub(:, :, itstep) = usrdata(:, COL_USR_SIGCLKEPH_ENUB);
+    total_mean_enub(:, :, itstep) = usrdata(:, COL_USR_BIASTOTAL_ENUB);
+    total_sig_enub(:, :, itstep) = usrdata(:, COL_USR_SIGTOTAL_ENUB);
     
     vpl(:,itstep) = vhpl(:,1);
     hpl(:,itstep) = vhpl(:,2);
@@ -287,12 +292,14 @@ end
 save 'outputs' satdata usrdata wrsdata igpdata inv_igp_mask sat_xyz udrei ...
                givei vpl hpl usrlatgrid usrlongrid udre_hist give_hist ...
 		       udrei_hist givei_hist nm_igp_hist betai chi2ratioi usr2satdata ...
-               IonoError iono_mean_enub iono_sig_enub ClockEphError clkeph_mean_enub clkeph_sig_enub;
+               IonoError iono_mean_enub iono_sig_enub ClockEphError ...
+               clkeph_mean_enub clkeph_sig_enub total_mean_enub total_sig_enub;
 % OUTPUT processing
 outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,sat_xyz,udrei,...
               givei,vpl,hpl,usrlatgrid,usrlongrid,outputs,percent,vhal,...
               pa_mode,udre_hist,give_hist,udrei_hist,givei_hist, IonoError, ...
-              iono_mean_enub, iono_sig_enub, ClockEphError, clkeph_mean_enub, clkeph_sig_enub);
+              iono_mean_enub, iono_sig_enub, ClockEphError, clkeph_mean_enub, ...
+              clkeph_sig_enub, total_mean_enub, total_sig_enub);
 
 
 

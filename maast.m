@@ -30,9 +30,10 @@ addpath(genpath('Tools'));
 init_const;      % global physical and gps constants
 init_col_labels; % column indices 
 init_mops;       % MOPS constants
-init_labels
-%init_hist;       % histogram parameters
+init_labels;     % some useful labels
 
 % launch GUI Control Panel
-maastgui;
-init_gui;    % read algorithm .m files in directory and form menu (global)
+cocogui;
+init_coco_gui;
+% maastgui;
+% init_gui;    % read algorithm .m files in directory and form menu (global)

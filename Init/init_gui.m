@@ -341,9 +341,3 @@ for i=1:n,
     set(allh(i),'fontunits','points');
     set(allh(i),'fontsize',10);
 end
-
-
-
-
-
-

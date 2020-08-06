@@ -63,15 +63,14 @@ MOPS_UDREI_DNU     = 16;
 MOPS_UDREI_MIN     = 1;
 MOPS_UDREI_MAX     = 16;
 
-MOPS_GIVE          = [0.3 0.6 0.9 1.2 1.5 1.8 2.1 2.4 2.7 3.0 3.6 4.5 6.0 15.0 45.0 MOPS_NOT_MONITORED];
-MOPS_MU_GIVE       = [linspace(-0.7, 0.7, 15) MOPS_NOT_MONITORED];
-MOPS_SIG2_GIVE     = [0.0084 0.0333 0.0749 0.1331 0.2079 0.2994 0.4075 ...
-                       0.5322 0.6735 0.8315 1.1974 1.8709 3.3260 20.787 ...
-                       187.0826 MOPS_NOT_MONITORED];   %GIVE variance values
+nSteps = 17;
+MOPS_GIVE          = [logspace(log10(0.3), log10(45), nSteps) MOPS_NOT_MONITORED];
+MOPS_MU_GIVE       = [linspace(-0.7, 0.7, nSteps) MOPS_NOT_MONITORED];
+MOPS_SIG2_GIVE     = [logspace(log10(0.0084), log10(187.0826), nSteps) MOPS_NOT_MONITORED];   %GIVE variance values
 MOPS_SIG_GIVE      = [sqrt(MOPS_SIG2_GIVE(1:end-1)) MOPS_NOT_MONITORED];
-MOPS_GIVEI_NM      = 16;          % Not monitored GIVEI index
+MOPS_GIVEI_NM      = nSteps+1;          % Not monitored GIVEI index
 MOPS_GIVEI_MIN     = 1;
-MOPS_GIVEI_MAX     = 16;
+MOPS_GIVEI_MAX     = nSteps+1;
 
 
 MOPS_UIRE_NUM = 40.0*((pi/180)^2);    % Numerator of fraction to provide upper bound on residual iono error (rad^2 * meters) 

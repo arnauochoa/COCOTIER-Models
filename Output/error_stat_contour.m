@@ -1,5 +1,5 @@
-function iono_error_stat_contour(ionoErrStat, usrdata, statType, titleText)
-% IONO_ERROR_STAT_CONTOUR: Plots iono error statistic as contour over map
+function error_stat_contour(ionoErrStat, usrdata, statType, titleText)
+% ERROR_STAT_CONTOUR: Plots residual error statistic as contour over map
 %
 % Inputs:
 %     
@@ -58,30 +58,17 @@ n_map=n*m;
 ll_map=[reshape(lats, n_map, 1) reshape(lons, n_map, 1)];
 
 %initialize the map
-uireStat_map=repmat(MOPS_GIVEI_NM,n_map,1);
+errorStat_map=repmat(MOPS_GIVEI_NM,n_map,1);
 
 % Find UIRE stat indices
 uireStatInd = assign_indices(ionoErrStat, mopsStat, MOPS_GIVEI_NM);
 
 %interpolate onto the mesh
 interp = scatteredInterpolant(ll_user(:, 1), ll_user(:, 2), ionoErrStat,'linear','none'); % Lat, Lon
-temp = interp(ll_map(:,1), ll_map(:,2)); % Lat, Lon
+errorStat = interp(ll_map(:,1), ll_map(:,2)); % Lat, Lon
 
 %determine the index values
-for idx = 2:length(mopsStat)-1
-  i=find(temp > mopsStat(idx-1) & temp <= mopsStat(idx));
-  if(~isempty(i))
-    uireStat_map(i)=idx;
-  end
-end
-i=find(temp > 0 & temp <= mopsStat(1));
-if(~isempty(i))
-  uireStat_map(i)=1;
-end
-i=find(temp > mopsStat(end-1));
-if(~isempty(i))
-  uireStat_map(i)=length(mopsStat)-1;
-end
+errorStat_map = assign_indices(errorStat, mopsStat, MOPS_GIVEI_NM);
 
 ticklabels=num2str(mopsStat', '%1.2f');
 ticklabels(MOPS_GIVEI_NM,:)=pad('NM', size(ticklabels, 2), 'both'); % Add spaces to fill
@@ -89,7 +76,7 @@ ticklabels(MOPS_GIVEI_NM,:)=pad('NM', size(ticklabels, 2), 'both'); % Add spaces
 clf
 bartext = [statType ' (' units ')'];
 
-svm_contour(lx,ly,reshape(uireStat_map,length(ly),length(lx)), ...
+svm_contour(lx,ly,reshape(errorStat_map,length(ly),length(lx)), ...
             1:MOPS_GIVEI_NM, ticklabels, GRAPH_GIVEI_COLORS, bartext, ...
             'vert')
 if(span360 < span180)        

@@ -5,7 +5,7 @@ function [IonoError, usrdata, usr2satdata] = compute_iono_error_nse(usrdata, usr
 % the NSE model from real data
 
 global IONO_NSE_RESULTSFILE IONO_NSE_STATIONSFILE
-global COL_U2S_UID COL_U2S_EL COL_U2S_BIASIONO COL_U2S_SIG2IONO
+global COL_U2S_UID COL_U2S_EL COL_U2S_BIASIONO COL_U2S_SIGIONO COL_U2S_SIG2IONO
 global COL_USR_UID COL_USR_LL
 
 % Read data
@@ -25,12 +25,15 @@ for iElev = 1:length(el_bin)-1
     maxElev = deg2rad(el_bin(iElev+1));
 
     % Create interpolation object
-    meanInterp = scatteredInterpolant(ECAC_pos(:,1),ECAC_pos(:,2),Result_MeanMat(:,iElev),'nearest','nearest');
-    stdInterp = scatteredInterpolant(ECAC_pos(:,1),ECAC_pos(:,2),Result_StdMat(:,iElev),'nearest','nearest');
+    meanInterp = scatteredInterpolant(ECAC_pos(:,1),ECAC_pos(:,2),Result_MeanMat(:,iElev),'linear','none');
+    stdInterp = scatteredInterpolant(ECAC_pos(:,1),ECAC_pos(:,2),Result_StdMat(:,iElev),'linear','none');
 
     % Interpolate over user positions
     ionoErrMean(:, iElev) = meanInterp(usrdata(:, COL_USR_LL(2)), usrdata(:, COL_USR_LL(1)));
     ionoErrStd(:, iElev) = stdInterp(usrdata(:, COL_USR_LL(2)), usrdata(:, COL_USR_LL(1)));
+    % Correct for negative STD
+    negStdInd = ionoErrStd(:, iElev) < 0;
+    ionoErrStd(negStdInd, iElev) = 0;
 
     % Find LOS in elevation bin
     losInBin = find((usr2satdata(:, COL_U2S_EL)>minElev & usr2satdata(:, COL_U2S_EL)<=maxElev));
@@ -40,11 +43,17 @@ for iElev = 1:length(el_bin)-1
     if ~isempty(goodLosInBin)
         for i = 1:length(goodLosInBin)
             % Find user position
+            aux = find(usrdata(:, COL_USR_UID) == usr2satdata(goodLosInBin(i), COL_U2S_UID));
             userLL = usrdata(usrdata(:, COL_USR_UID) == usr2satdata(goodLosInBin(i), COL_U2S_UID), COL_USR_LL);
 
             % assign mean and std to los
             usr2satdata(goodLosInBin(i), COL_U2S_BIASIONO) = meanInterp(userLL(2), userLL(1));
-            usr2satdata(goodLosInBin(i), COL_U2S_SIG2IONO) = stdInterp(userLL(2), userLL(1))^2;
+            usr2satdata(goodLosInBin(i), COL_U2S_SIGIONO) = stdInterp(userLL(2), userLL(1));
+            % Correct for negative STD
+            if usr2satdata(goodLosInBin(i), COL_U2S_SIGIONO) < 0
+                usr2satdata(goodLosInBin(i), COL_U2S_SIGIONO) = 0;
+            end
+            usr2satdata(goodLosInBin(i), COL_U2S_SIG2IONO) = usr2satdata(goodLosInBin(i), COL_U2S_SIGIONO)^2;
         end
     end
 

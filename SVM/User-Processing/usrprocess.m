@@ -23,11 +23,12 @@ function [vhpl, usr2satdata, usrdata, IonoError, ClockEphError] =               
 global MOPS_SIN_USRMASK MT27 
 global COL_SAT_XYZ COL_USR_XYZ COL_USR_LL COL_SAT_UDREI COL_SAT_DEGRAD ...
         COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT  ...
-        COL_U2S_PRN COL_U2S_GXYZB COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIG2IONO ...
+        COL_U2S_PRN COL_U2S_GXYZB COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIGIONO COL_U2S_SIG2IONO ...
         COL_U2S_OB2PP COL_U2S_SIG2TRP COL_U2S_SIG2L1MP  ...
         COL_U2S_LOSENU COL_U2S_GENUB COL_U2S_EL COL_U2S_AZ ...
-        COL_U2S_IPPLL COL_U2S_TTRACK0 COL_U2S_INITNAN ...
-        COL_SAT_COV COL_SAT_SCALEF COL_IGP_LL COL_IGP_GIVEI COL_IGP_DEGRAD
+        COL_U2S_IPPLL COL_U2S_TTRACK0 COL_U2S_INITNAN COL_U2S_BIASCLKEPH ...
+        COL_U2S_SIGCLKEPH COL_U2S_BIASTOTAL COL_U2S_SIGTOTAL
+global COL_SAT_COV COL_SAT_SCALEF COL_IGP_LL COL_IGP_GIVEI COL_IGP_DEGRAD
 global MOPS_SIG_UDRE MOPS_MT27_DUDRE MOPS_UDREI_NM MOPS_UDREI_DNU 
 global MOPS_MIN_GEOPRN MOPS_MAX_GEOPRN
 global MOPS_UIRE_NUM MOPS_UIRE_DEN MOPS_UIRE_CONST
@@ -158,7 +159,7 @@ if(~isempty(good_udre))
 
     % ==== IONO ====
     switch give_mode
-        case GIVE_MODE_DUALFREQ
+        case GIVE_MODE_DUALFREQ % NOT USED
             %dual frequency user (iono-free combination)        
             good_los = good_sat;
             %residual iono error (higher order terms) really sig_uire 
@@ -177,28 +178,29 @@ if(~isempty(good_udre))
             good_los = good_sat;
             obl2(good_sat) = obliquity2(el(good_sat));
             
-            % compute uire statistics
+            % IONO residual error statistics
             [IonoError, usrdata, usr2satdata] = compute_iono_error_nse(usrdata, usr2satdata, good_los);
             
-            good_los = intersect(good_los, find(~isnan(usr2satdata(:, COL_U2S_SIG2IONO))));
-            % variance for each los
-            if(~isempty(good_los))
-                %add in degradation terms
-                if rss_udre
-                    sig2_flt = sig_flt(good_los).^2 + ...
-                                   satdata(satidx(good_los), COL_SAT_DEGRAD);
-                else
-                    sig2_flt = (sig_flt(good_los) + ...
-                               satdata(satidx(good_los), COL_SAT_DEGRAD)).^2;
-                end
-                sig2 = sig2_flt + usr2satdata(good_los, COL_U2S_SIG2IONO) + ...
-                       sig2_trop(good_los) + sig2_cnmp(good_los);        
-            end
-            
-            % CLOCK+EPH ERROR
+            % CLOCK+EPH residual error statistics
             [ClockEphError, usr2satdata] = compute_clkeph_error_nse(usrdata, usr2satdata, good_los);
             
-        otherwise
+            good_los = intersect(good_los, find(~isnan(usr2satdata(:, COL_U2S_SIGIONO))));
+            % variance for each los
+            if(~isempty(good_los))
+   
+                sig2 =  nansum([    usr2satdata(good_los, COL_U2S_SIG2IONO)     ...
+                                    usr2satdata(good_los, COL_U2S_SIGCLKEPH).^2 ...
+                                    sig2_trop(good_los)                         ...
+                                    sig2_cnmp(good_los)                         ], 2);
+                usr2satdata(good_los, COL_U2S_SIGTOTAL) = sqrt(sig2);
+                                
+                mean =  nansum([    usr2satdata(good_los, COL_U2S_BIASIONO)     ...
+                                    usr2satdata(good_los, COL_U2S_BIASCLKEPH).^2 ], 2);
+                usr2satdata(good_los, COL_U2S_BIASTOTAL) = mean;           
+                    
+
+            end
+        otherwise % NOT USED
             good_los = [];
             obl2(good_sat) = obliquity2(el(good_sat));
             % Consider centered normal distribution
@@ -252,7 +254,7 @@ if(~isempty(good_udre))
         usr2satdata(good_los, COL_U2S_OB2PP) = obl2(good_los);
 
         % calculate VPL and HPL
-        [vhpl(1:max(usridx(good_los)),:), G_usr, W_usr] = usr_vhpl(los_enub(good_los,:), ...
+        [vhpl(1:max(usridx(good_los)),:), ~, ~] = usr_vhpl(los_enub(good_los,:), ...
                                                  usridx(good_los), sig2, ...
                                                  usr2satdata(good_los,COL_U2S_PRN),...
                                                  pa_mode);
@@ -263,6 +265,8 @@ if(~isempty(good_udre))
         end
         
         if give_mode == GIVE_MODE_NSEMODEL
+            % Compute G and W matrices (G is in ENU)
+            [G_usr, W_usr] = findGW(usr2satdata(good_los, :), usridx(good_los), sig2);
             % Compute mean and std of each user pos error due to iono
             usrdata = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata);
         end

@@ -1,7 +1,7 @@
-function [] = plotStatHistograms(userLL, error_mean_enub, error_sig2_enub, errorType)
+function [] = plotStatHistograms(userLL, error_mean_enub, error_sig_enub, errorType)
 
-global OUTPUT_IONO_LABEL OUTPUT_CLKEPH_LABEL
-global GRAPH_IONOHIST_FIGNO GRAPH_CLKEPHHIST_FIGNO;
+global OUTPUT_IONO_LABEL OUTPUT_CLKEPH_LABEL OUTPUT_TOTAL_LABEL
+global GRAPH_IONOHIST_FIGNO GRAPH_CLKEPHHIST_FIGNO GRAPH_TOTALHIST_FIGNO;
 global IONO_NSE_HISTOGRAMFILE;
 
 
@@ -11,8 +11,11 @@ switch errorType
         pos = load(IONO_NSE_HISTOGRAMFILE);
         figNo = GRAPH_IONOHIST_FIGNO;
     case OUTPUT_CLKEPH_LABEL
-        pos = load('iono_histogram_positions.txt'); % define in init
+        pos = load(IONO_NSE_HISTOGRAMFILE); % TODO define in init
         figNo = GRAPH_CLKEPHHIST_FIGNO;
+    case OUTPUT_TOTAL_LABEL
+        pos = load(IONO_NSE_HISTOGRAMFILE); % TODO define in init
+        figNo = GRAPH_TOTALHIST_FIGNO;
     otherwise
         error('Wrong input argument for errorType');
 end
@@ -30,8 +33,7 @@ for iPos = 1:nPos
     % Mean
     pos_error_mean_enub = permute(error_mean_enub(posIdx(iPos), :, :), [3 2 1]);
     % Standard deviation
-    pos_error_sig2_enub = permute(error_sig2_enub(posIdx(iPos), :, :), [3 2 1]);
-    pos_error_std_enub = sqrt(abs(pos_error_sig2_enub));
+    pos_error_std_enub = permute(error_sig_enub(posIdx(iPos), :, :), [3 2 1]);
     
     nSamples = size(pos_error_mean_enub, 1);
     
@@ -78,7 +80,8 @@ for iPos = 1:nPos
                         'string','-',...
                         'callback',{@decbins,S.h});
     
-    titleTxt = {sprintf('Distributions of \\mu_{ENUC} and \\sigma_{ENUC} at %d N, %d E', pos(iPos, :)); ...
+    titleTxt = {errorType; ...
+                sprintf('Distributions of \\mu_{ENUC} and \\sigma_{ENUC} at %d N, %d E', pos(iPos, :)); ...
                 sprintf('Size: %d', nSamples)};
     sgtitle(titleTxt);
     figName = sprintf('%s error distributions at %d N, %d E', errorType, pos(iPos, :));
@@ -99,7 +102,8 @@ for iPos = 1:nPos
         view(2)
     end
 
-    titleTxt = {sprintf('3D Distributions of coupled \\mu_{ENUC} and \\sigma_{ENUC} at %d N, %d E', pos(iPos, :)); ...
+    titleTxt = {errorType; ...
+                sprintf('3D Distributions of coupled \\mu_{ENUC} and \\sigma_{ENUC} at %d N, %d E', pos(iPos, :)); ...
                 sprintf('Size: %d', nSamples)};
     sgtitle(titleTxt);
     figName = sprintf('%s error 3D distributions at %d N, %d E', errorType, pos(iPos, :));
