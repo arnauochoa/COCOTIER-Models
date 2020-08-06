@@ -25,8 +25,8 @@ for iElev = 1:length(el_bin)-1
     maxElev = deg2rad(el_bin(iElev+1));
 
     % Create interpolation object
-    meanInterp = scatteredInterpolant(ECAC_pos(:,1),ECAC_pos(:,2),Result_MeanMat(:,iElev),'linear','nearest');
-    stdInterp = scatteredInterpolant(ECAC_pos(:,1),ECAC_pos(:,2),Result_StdMat(:,iElev),'linear','nearest');
+    meanInterp = scatteredInterpolant(ECAC_pos(:,1),ECAC_pos(:,2),Result_MeanMat(:,iElev),'linear','none');
+    stdInterp = scatteredInterpolant(ECAC_pos(:,1),ECAC_pos(:,2),Result_StdMat(:,iElev),'linear','none');
 
     % Interpolate over user positions
     ionoErrMean(:, iElev) = meanInterp(usrdata(:, COL_USR_LL(2)), usrdata(:, COL_USR_LL(1)));

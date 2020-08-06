@@ -45,12 +45,15 @@ for iElev = 1:length(elBins)-1
     maxElev = deg2rad(elBins(iElev+1));
 
     % Create interpolation object
-    meanInterp = scatteredInterpolant(latlon(:,1),latlon(:,2),clkephMeanEl(:,iElev),'linear','nearest');
-    stdInterp = scatteredInterpolant(latlon(:,1),latlon(:,2),clkephStdEl(:,iElev),'linear','nearest');
+    meanInterp = scatteredInterpolant(latlon(:,1),latlon(:,2),clkephMeanEl(:,iElev),'linear','none');
+    stdInterp = scatteredInterpolant(latlon(:,1),latlon(:,2),clkephStdEl(:,iElev),'linear','none');
 
     % Interpolate over user positions
     clkephErrMean(:, iElev) = meanInterp(usrdata(:, COL_USR_LL(1)), usrdata(:, COL_USR_LL(2)));
-    clkephErrStd(:, iElev) = max(0, stdInterp(usrdata(:, COL_USR_LL(1)), usrdata(:, COL_USR_LL(2))));
+    clkephErrStd(:, iElev) = stdInterp(usrdata(:, COL_USR_LL(1)), usrdata(:, COL_USR_LL(2)));
+    % Correct for negative STD
+    negStdInd = clkephErrStd(:, iElev) < 0;
+    clkephErrStd(negStdInd, iElev) = 0;
 
     % Find LOS in elevation bin
     losInBin = find((usr2satdata(:, COL_U2S_EL)>minElev & usr2satdata(:, COL_U2S_EL)<=maxElev));
@@ -65,11 +68,14 @@ for iElev = 1:length(elBins)-1
             % assign mean and std to los
             usr2satdata(goodLosInBin(i), COL_U2S_BIASCLKEPH) = meanInterp(userLL(1), userLL(2));
             usr2satdata(goodLosInBin(i), COL_U2S_SIGCLKEPH) = stdInterp(userLL(1), userLL(2));
+            % Correct for negative STD
+            if usr2satdata(goodLosInBin(i), COL_U2S_SIGCLKEPH) < 0
+                usr2satdata(goodLosInBin(i), COL_U2S_SIGCLKEPH) = 0;
+            end
         end
     end
 
 end
-
 
 ClockEphError.mean      = clkephErrMean;
 ClockEphError.std       = clkephErrStd;
