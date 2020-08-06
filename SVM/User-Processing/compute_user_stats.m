@@ -1,11 +1,13 @@
-function [usrdata] = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata)
+function [usrdata] = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata, mu, sig2)
 %COMPUTE_USER_STATS Computes the mean and covariance of the position error
 %for each user
 
 global COL_U2S_UID COL_U2S_BIASIONO COL_U2S_SIG2IONO ...
-        COL_U2S_BIASCLKEPH COL_U2S_SIGCLKEPH
+        COL_U2S_BIASCLKEPH COL_U2S_SIGCLKEPH ...
+        COL_U2S_BIASTOTAL COL_U2S_SIGTOTAL
 global COL_USR_UID COL_USR_LL COL_USR_BIASIONO_ENUB COL_USR_SIGIONO_ENUB ...
-        COL_USR_BIASCLKEPH_ENUB COL_USR_SIGCLKEPH_ENUB
+        COL_USR_BIASCLKEPH_ENUB COL_USR_SIGCLKEPH_ENUB ...
+        COL_USR_BIASTOTAL_ENUB COL_USR_SIGTOTAL_ENUB
 
 nUser = size(usrdata, 1);
 
@@ -22,11 +24,11 @@ for iUser = 1:nUser
         S = (G_usr{iUser}' * W_usr{iUser} * G_usr{iUser}) \ G_usr{iUser}' * W_usr{iUser}; % deal with singular matrix **
 
         % Find rotation matrix to go from XYZB to ENUB
-        Rot = eye(4);
-        Rot(1:3, 1:3) = findxyz2enu(deg2rad(usrdata(iUser, COL_USR_LL(1))), ... % User Latitude in radians
-                                    deg2rad(usrdata(iUser, COL_USR_LL(2))));    % User Longitude in radians
+%         Rot = eye(4);
+%         Rot(1:3, 1:3) = findxyz2enu(deg2rad(usrdata(iUser, COL_USR_LL(1))), ... % User Latitude in radians
+%                                     deg2rad(usrdata(iUser, COL_USR_LL(2))));    % User Longitude in radians
 
-        %% Ionospheric error
+        %% Ionospheric residual error
         % Find mean of iono error in ENUB
         ionoMean_enub = S * usr2satdata(iLos, COL_U2S_BIASIONO);
 %         ionoMean_enub = Rot * ionoMean_xyzb;
@@ -40,7 +42,7 @@ for iUser = 1:nUser
 %         ionoStd_enub = Rot * ionoStd_xyzb;
         usrdata(iUser, COL_USR_SIGIONO_ENUB) = ionoStd_enub';
         
-        %% Clock+ephemeris error
+        %% Clock+ephemeris residual error
         % Find mean of clk+eph error in ENUB
         clkephMean_enub = S * usr2satdata(iLos, COL_U2S_BIASCLKEPH);
 %         clkephMean_enub = Rot * clkephMean_xyzb;
@@ -53,6 +55,19 @@ for iUser = 1:nUser
         clkephStd_enub = sqrt(clkephVar_enub);
 %         clkephStd_enub = Rot * clkephStd_xyzb;
         usrdata(iUser, COL_USR_SIGCLKEPH_ENUB) = clkephStd_enub';
+        
+        %% Total residual error
+        % Find mean of total error in ENUB
+        totalMean_enub = S * usr2satdata(iLos, COL_U2S_BIASTOTAL);
+        usrdata(iUser, COL_USR_BIASTOTAL_ENUB) = totalMean_enub';
+
+        % Find Covariance of total error in ENUB
+        R = diag(usr2satdata(iLos, COL_U2S_SIGTOTAL).^2);
+        totalCov_enub = S * R * S';
+        totalVar_enub = diag(totalCov_enub);
+        totalStd_enub = sqrt(totalVar_enub);
+%         clkephStd_enub = Rot * clkephStd_xyzb;
+        usrdata(iUser, COL_USR_SIGTOTAL_ENUB) = totalStd_enub';
     end
 end
 

@@ -26,8 +26,9 @@ global COL_SAT_XYZ COL_USR_XYZ COL_USR_LL COL_SAT_UDREI COL_SAT_DEGRAD ...
         COL_U2S_PRN COL_U2S_GXYZB COL_U2S_SIGFLT COL_U2S_BIASIONO COL_U2S_SIGIONO COL_U2S_SIG2IONO ...
         COL_U2S_OB2PP COL_U2S_SIG2TRP COL_U2S_SIG2L1MP  ...
         COL_U2S_LOSENU COL_U2S_GENUB COL_U2S_EL COL_U2S_AZ ...
-        COL_U2S_IPPLL COL_U2S_TTRACK0 COL_U2S_INITNAN COL_U2S_BIASCLKEPH ...
-        COL_U2S_SIGCLKEPH COL_U2S_BIASTOTAL COL_U2S_SIGTOTAL
+        COL_U2S_IPPLL COL_U2S_TTRACK0 COL_U2S_INITNAN ...
+        COL_U2S_SIGCLKEPH 
+        COL_U2S_BIASTOTAL COL_U2S_SIGTOTAL
 global COL_SAT_COV COL_SAT_SCALEF COL_IGP_LL COL_IGP_GIVEI COL_IGP_DEGRAD
 global MOPS_SIG_UDRE MOPS_MT27_DUDRE MOPS_UDREI_NM MOPS_UDREI_DNU 
 global MOPS_MIN_GEOPRN MOPS_MAX_GEOPRN
@@ -191,12 +192,11 @@ if(~isempty(good_udre))
                 sig2 =  nansum([    usr2satdata(good_los, COL_U2S_SIG2IONO)     ...
                                     usr2satdata(good_los, COL_U2S_SIGCLKEPH).^2 ...
                                     sig2_trop(good_los)                         ...
-                                    sig2_cnmp(good_los)                         ], 2);
-                usr2satdata(good_los, COL_U2S_SIGTOTAL) = sqrt(sig2);
+                                    sig2_cnmp(good_los)                         ]);
                                 
-                mean =  nansum([    usr2satdata(good_los, COL_U2S_BIASIONO)     ...
-                                    usr2satdata(good_los, COL_U2S_BIASCLKEPH).^2 ], 2);
-                usr2satdata(good_los, COL_U2S_BIASTOTAL) = mean;           
+                mu =    nansum([    usr2satdata(good_los, COL_U2S_BIASIONO)     ...
+                                    usr2satdata(good_los, COL_U2S_BIASCLKEPH).^2 ]);
+                                
                     
 
             end
@@ -268,7 +268,7 @@ if(~isempty(good_udre))
             % Compute G and W matrices (G is in ENU)
             [G_usr, W_usr] = findGW(usr2satdata(good_los, :), usridx(good_los), sig2);
             % Compute mean and std of each user pos error due to iono
-            usrdata = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata);
+            usrdata = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata, mu, sig2);
         end
     end
 end

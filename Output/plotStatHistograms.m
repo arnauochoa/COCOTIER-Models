@@ -1,7 +1,7 @@
 function [] = plotStatHistograms(userLL, error_mean_enub, error_sig_enub, errorType)
 
-global OUTPUT_IONO_LABEL OUTPUT_CLKEPH_LABEL
-global GRAPH_IONOHIST_FIGNO GRAPH_CLKEPHHIST_FIGNO;
+global OUTPUT_IONO_LABEL OUTPUT_CLKEPH_LABEL OUTPUT_TOTAL_LABEL
+global GRAPH_IONOHIST_FIGNO GRAPH_CLKEPHHIST_FIGNO GRAPH_TOTALHIST_FIGNO;
 global IONO_NSE_HISTOGRAMFILE;
 
 
@@ -11,8 +11,11 @@ switch errorType
         pos = load(IONO_NSE_HISTOGRAMFILE);
         figNo = GRAPH_IONOHIST_FIGNO;
     case OUTPUT_CLKEPH_LABEL
-        pos = load('iono_histogram_positions.txt'); % define in init
+        pos = load(IONO_NSE_HISTOGRAMFILE); % TODO define in init
         figNo = GRAPH_CLKEPHHIST_FIGNO;
+    case OUTPUT_TOTAL_LABEL
+        pos = load(IONO_NSE_HISTOGRAMFILE); % TODO define in init
+        figNo = GRAPH_TOTALHIST_FIGNO;
     otherwise
         error('Wrong input argument for errorType');
 end

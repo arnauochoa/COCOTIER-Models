@@ -1,5 +1,5 @@
-function iono_error_stat_contour(ionoErrStat, usrdata, statType, titleText)
-% IONO_ERROR_STAT_CONTOUR: Plots iono error statistic as contour over map
+function error_stat_contour(ionoErrStat, usrdata, statType, titleText)
+% ERROR_STAT_CONTOUR: Plots residual error statistic as contour over map
 %
 % Inputs:
 %     

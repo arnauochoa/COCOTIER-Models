@@ -2,7 +2,8 @@ function outputprocess(satdata,usrdata,wrsdata,igpdata,inv_igp_mask,...
                        sat_xyz,udrei,givei,usrvpl,usrhpl,latgrid,...
 					   longrid,outputs,percent,vhal,pa_mode,udre_hist,give_hist,...
 					   udrei_hist,givei_hist, IonoError, iono_mean_enub, iono_sig_enub,...
-                       ClockEphError, clkeph_mean_enub, clkeph_sig_enub)
+                       ClockEphError, clkeph_mean_enub, clkeph_sig_enub, ...
+                       total_mean_enub, total_sig_enub)
 %*************************************************************************
 %*     Copyright c 2007 The board of trustees of the Leland Stanford     *
 %*                      Junior University. All rights reserved.          *
@@ -28,8 +29,9 @@ global GRAPH_UDREHIST_FIGNO GRAPH_GIVEHIST_FIGNO GRAPH_COV_AVAIL_FIGNO
 global GRAPH_IONOMEANENUMAP_FIGNO GRAPH_IONOSTDENUMAP_FIGNO
 global GRAPH_CLKEPHBIASMAP_FIGNO GRAPH_CLKEPHSTDMAP_FIGNO
 global GRAPH_CLKEPHMEANENUMAP_FIGNO GRAPH_CLKEPHSTDENUMAP_FIGNO
+global GRAPH_TOTALMEANENUMAP_FIGNO GRAPH_TOTALSTDENUMAP_FIGNO
 global OUTPUT_BIAS_LABEL OUTPUT_STD_LABEL
-global OUTPUT_IONO_LABEL OUTPUT_CLKEPH_LABEL
+global OUTPUT_IONO_LABEL OUTPUT_CLKEPH_LABEL OUTPUT_TOTAL_LABEL
 % global COL_USR_BIASUIRE_ENU COL_USR_SIG2UIRE_ENU
 
 init_graph;
@@ -70,14 +72,14 @@ if outputs(GUI_OUT_GIVEMAP)
                 % Iono range error bias
                 h=figure(GRAPH_IONOBIASMAP_FIGNO(iEl));
                 titleText = sprintf('IONO RANGE ERROR BIAS MAP: %d < el < %d', IonoError.elBins(iEl), IonoError.elBins(iEl+1));
-                iono_error_stat_contour(IonoError.mean(:, iEl), usrdata, OUTPUT_BIAS_LABEL, titleText);
+                error_stat_contour(IonoError.mean(:, iEl), usrdata, OUTPUT_BIAS_LABEL, titleText);
                 figName = sprintf('IONO RANGE ERROR BIAS MAP: %d < el < %d', IonoError.elBins(iEl), IonoError.elBins(iEl+1));
                 set(h, 'name', figName);
 
                 % Iono range error STD
                 h=figure(GRAPH_IONOSTDMAP_FIGNO(iEl));
                 titleText = sprintf('IONO RANGE ERROR STD MAP: %d < el < %d', IonoError.elBins(iEl), IonoError.elBins(iEl+1));
-                iono_error_stat_contour(IonoError.std(:, iEl), usrdata, OUTPUT_STD_LABEL, titleText);
+                error_stat_contour(IonoError.std(:, iEl), usrdata, OUTPUT_STD_LABEL, titleText);
                 figName = sprintf('IONO RANGE ERROR STD MAP: %d < el < %d', IonoError.elBins(iEl), IonoError.elBins(iEl+1));
                 set(h, 'name', figName);
             end
@@ -105,13 +107,13 @@ if outputs(GUI_OUT_UIPESTATS)
             % Mean
             h = figure(GRAPH_IONOMEANENUMAP_FIGNO(iDim));
             titleText = ['Mean iono position error along ' dimensions{iDim} ' axis at ' num2str(100*percent) '%'];
-            iono_error_stat_contour(prctile_iono_mean_enub(:, iDim), usrdata, OUTPUT_BIAS_LABEL, titleText);
+            error_stat_contour(prctile_iono_mean_enub(:, iDim), usrdata, OUTPUT_BIAS_LABEL, titleText);
             figName = [dimensions{iDim} ' ERROR MEAN ' num2str(percent)];
             set(h, 'name', figName);
             % Variance
             h = figure(GRAPH_IONOSTDENUMAP_FIGNO(iDim));
             titleText = ['STD of iono position error along ' dimensions{iDim} ' axis at ' num2str(100*percent) '%'];
-            iono_error_stat_contour(prctile_iono_std_enub(:, iDim), usrdata, OUTPUT_STD_LABEL, titleText);
+            error_stat_contour(prctile_iono_std_enub(:, iDim), usrdata, OUTPUT_STD_LABEL, titleText);
             figName = [dimensions{iDim} ' ERROR STD ' num2str(percent)];
             set(h, 'name', figName);
         end
@@ -129,14 +131,14 @@ if outputs(GUI_OUT_UDREMAP)
             % Iono range error bias
             h=figure(GRAPH_CLKEPHBIASMAP_FIGNO(iEl));
             titleText = sprintf('CLOCK+EPH RANGE ERROR BIAS MAP: %d < el < %d', ClockEphError.elBins(iEl), ClockEphError.elBins(iEl+1));
-            iono_error_stat_contour(ClockEphError.mean(:, iEl), usrdata, OUTPUT_BIAS_LABEL, titleText);
+            error_stat_contour(ClockEphError.mean(:, iEl), usrdata, OUTPUT_BIAS_LABEL, titleText);
             figName = sprintf('CLOCK+EPH RANGE ERROR BIAS MAP: %d < el < %d', ClockEphError.elBins(iEl), ClockEphError.elBins(iEl+1));
             set(h, 'name', figName);
 
             % Iono range error STD
             h=figure(GRAPH_CLKEPHSTDMAP_FIGNO(iEl));
             titleText = sprintf('CLOCK+EPH RANGE ERROR STD MAP: %d < el < %d', ClockEphError.elBins(iEl), ClockEphError.elBins(iEl+1));
-            iono_error_stat_contour(ClockEphError.std(:, iEl), usrdata, OUTPUT_STD_LABEL, titleText);
+            error_stat_contour(ClockEphError.std(:, iEl), usrdata, OUTPUT_STD_LABEL, titleText);
             figName = sprintf('CLOCK+EPH RANGE ERROR STD MAP: %d < el < %d', ClockEphError.elBins(iEl), ClockEphError.elBins(iEl+1));
             set(h, 'name', figName);
         end
@@ -152,13 +154,13 @@ if outputs(GUI_OUT_UDREHIST)
             % Mean
             h = figure(GRAPH_CLKEPHMEANENUMAP_FIGNO(iDim));
             titleText = ['Mean clock+eph position error along ' dimensions{iDim} ' axis at ' num2str(100*percent) '%'];
-            iono_error_stat_contour(prctile_clkeph_mean_enub(:, iDim), usrdata, OUTPUT_BIAS_LABEL, titleText);
+            error_stat_contour(prctile_clkeph_mean_enub(:, iDim), usrdata, OUTPUT_BIAS_LABEL, titleText);
             figName = [dimensions{iDim} ' ERROR MEAN ' num2str(percent)];
             set(h, 'name', figName);
             % Variance
             h = figure(GRAPH_CLKEPHSTDENUMAP_FIGNO(iDim));
             titleText = ['STD of clock+eph position error along ' dimensions{iDim} ' axis at ' num2str(percent) '%'];
-            iono_error_stat_contour(prctile_clkeph_std_enub(:, iDim), usrdata, OUTPUT_STD_LABEL, titleText);
+            error_stat_contour(prctile_clkeph_std_enub(:, iDim), usrdata, OUTPUT_STD_LABEL, titleText);
             figName = [dimensions{iDim} ' ERROR STD ' num2str(percent)];
             set(h, 'name', figName);
         end
@@ -167,6 +169,31 @@ if outputs(GUI_OUT_UDREHIST)
         plotStatHistograms(usrdata(:, COL_USR_LL), clkeph_mean_enub, clkeph_sig_enub, OUTPUT_CLKEPH_LABEL)
     end
 end
+
+if true
+    if sum(~isnan(total_mean_enub), 'all') && sum(~isnan(total_sig_enub), 'all')
+        dimensions = {'EAST', 'NORTH', 'UP', 'CLOCK'};
+        [prctile_total_mean_enub, prctile_total_std_enub] = findStatPrctiles(total_mean_enub, total_sig_enub, percent);
+        for iDim = 1:length(dimensions)
+            % Mean
+            h = figure(GRAPH_TOTALMEANENUMAP_FIGNO(iDim));
+            titleText = ['Mean total position error along ' dimensions{iDim} ' axis at ' num2str(100*percent) '%'];
+            error_stat_contour(prctile_total_mean_enub(:, iDim), usrdata, OUTPUT_BIAS_LABEL, titleText);
+            figName = [dimensions{iDim} ' ERROR MEAN ' num2str(percent)];
+            set(h, 'name', figName);
+            % Variance
+            h = figure(GRAPH_TOTALSTDENUMAP_FIGNO(iDim));
+            titleText = ['STD of total position error along ' dimensions{iDim} ' axis at ' num2str(percent) '%'];
+            error_stat_contour(prctile_total_std_enub(:, iDim), usrdata, OUTPUT_STD_LABEL, titleText);
+            figName = [dimensions{iDim} ' ERROR STD ' num2str(percent)];
+            set(h, 'name', figName);
+        end
+        
+        % Histograms
+        plotStatHistograms(usrdata(:, COL_USR_LL), total_mean_enub, total_sig_enub, OUTPUT_TOTAL_LABEL)
+    end
+end
+    
 
 end
 
