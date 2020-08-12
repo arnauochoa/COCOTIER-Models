@@ -47,7 +47,7 @@ GUI_USRCNMP_ALGO = {'af_cnmp_mops','af_cnmpaad','af_cnmpaad'};
 
 GUI_UDREGPS_INIT = {'init_udre_osp','init_udre2_osp','','init_udre_nsemodel',''};
 GUI_UDREGEO_INIT = {'init_geo_osp','init_geo2_osp','','',''};
-GUI_GIVE_INIT = {'init_give_osp','init_giveadd1_osp','','init_give_nsemodel',''};
+GUI_GIVE_INIT = {'init_give_osp','init_giveadd1_osp','','init_nsemodel',''};
 GUI_WRSTRP_INIT = {'init_trop_osp',''};
 GUI_USRTRP_INIT = {'','init_trop_osp'};
 GUI_WRSCNMP_INIT = {'init_cnmp','',''};

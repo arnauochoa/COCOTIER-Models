@@ -1,8 +1,8 @@
 function [] = plotStatHistograms(userLL, error_mean_enub, error_sig_enub, errorType)
 
 global OUTPUT_IONO_LABEL OUTPUT_CLKEPH_LABEL OUTPUT_TOTAL_LABEL
-global GRAPH_IONOHIST_FIGNO GRAPH_CLKEPHHIST_FIGNO GRAPH_TOTALHIST_FIGNO;
-global IONO_NSE_HISTOGRAMFILE;
+global GRAPH_IONOHIST_FIGNO GRAPH_CLKEPHHIST_FIGNO GRAPH_TOTALHIST_FIGNO
+global IONO_NSE_HISTOGRAMFILE CLKEPH_NSE_HISTOGRAMFILE TOTAL_NSE_HISTOGRAMFILE
 
 
 switch errorType
@@ -11,10 +11,10 @@ switch errorType
         pos = load(IONO_NSE_HISTOGRAMFILE);
         figNo = GRAPH_IONOHIST_FIGNO;
     case OUTPUT_CLKEPH_LABEL
-        pos = load(IONO_NSE_HISTOGRAMFILE); % TODO define in init
+        pos = load(CLKEPH_NSE_HISTOGRAMFILE);
         figNo = GRAPH_CLKEPHHIST_FIGNO;
     case OUTPUT_TOTAL_LABEL
-        pos = load(IONO_NSE_HISTOGRAMFILE); % TODO define in init
+        pos = load(TOTAL_NSE_HISTOGRAMFILE);
         figNo = GRAPH_TOTALHIST_FIGNO;
     otherwise
         error('Wrong input argument for errorType');
@@ -29,6 +29,7 @@ dimensions = {'EAST', 'NORTH', 'UP', 'CLOCK'};
 nDim = length(dimensions);
 
 for iPos = 1:nPos
+    %% Histograms
     S.f = figure(figNo(iPos));
     % Mean
     pos_error_mean_enub = permute(error_mean_enub(posIdx(iPos), :, :), [3 2 1]);
@@ -49,22 +50,7 @@ for iPos = 1:nPos
         xlabel(['\sigma_{' dimensions(iDim) '}']);
     end
     
-    %% Standard deviation
-
-    % Sigma East
-    subplot(2, 4, 5); 
-    S.h(5) = histogram(pos_error_std_enub(:, 1)); xlabel('\sigma_E');
-    % Sigma North
-    subplot(2, 4, 6); 
-    S.h(6) = histogram(pos_error_std_enub(:, 2)); xlabel('\sigma_N');
-    % Sigma Up
-    subplot(2, 4, 7); 
-    S.h(7) = histogram(pos_error_std_enub(:, 3)); xlabel('\sigma_U');
-    % Sigma Clock Offset
-    subplot(2, 4, 8); 
-    S.h(8) = histogram(pos_error_std_enub(:, 4)); xlabel('\sigma_C');
-    
-    %% Figure config
+    % Figure config
     % Buttons to change nbins
     S.pb = uicontrol('style','push',...
                     'units','pix',...
@@ -81,10 +67,10 @@ for iPos = 1:nPos
                         'callback',{@decbins,S.h});
     
     titleTxt = {errorType; ...
-                sprintf('Distributions of \\mu_{ENUC} and \\sigma_{ENUC} at %d N, %d E', pos(iPos, :)); ...
+                sprintf('Distributions of \\mu_{ENUC} and \\sigma_{ENUC} at %d N, %d E', userLL(posIdx(iPos), :)); ...
                 sprintf('Size: %d', nSamples)};
     sgtitle(titleTxt);
-    figName = sprintf('%s error distributions at %d N, %d E', errorType, pos(iPos, :));
+    figName = sprintf('%s error distributions at %d N, %d E', errorType, userLL(posIdx(iPos), :));
     set(S.f, 'Name', figName);
     set(S.f, 'Position', get(0, 'Screensize'));
     
@@ -103,12 +89,31 @@ for iPos = 1:nPos
     end
 
     titleTxt = {errorType; ...
-                sprintf('3D Distributions of coupled \\mu_{ENUC} and \\sigma_{ENUC} at %d N, %d E', pos(iPos, :)); ...
+                sprintf('3D Distributions of coupled \\mu_{ENUC} and \\sigma_{ENUC} at %d N, %d E', userLL(posIdx(iPos), :)); ...
                 sprintf('Size: %d', nSamples)};
     sgtitle(titleTxt);
-    figName = sprintf('%s error 3D distributions at %d N, %d E', errorType, pos(iPos, :));
+    figName = sprintf('%s error 3D distributions at %d N, %d E', errorType, userLL(posIdx(iPos), :));
     set(f, 'Name', figName); 
     set(f, 'Position', get(0, 'Screensize'));
+    
+    %% Q-Q plot
+    f = figure(figNo(iPos + 2*nPos));
+
+    for iDim = 1:nDim
+        % Mean histogram
+        subplot(2, 4, iDim);
+        qqplot(pos_error_mean_enub(:, iDim)); 
+        title(['\mu ' dimensions(iDim)]);
+        
+        % STD histogram
+        subplot(2, 4, iDim+nDim); 
+        qqplot(pos_error_std_enub(:, iDim)); 
+        title(['\sigma ' dimensions(iDim)]);
+    end
+    figName = sprintf('%s Q-Q plots %d N, %d E', errorType, userLL(posIdx(iPos), :));
+    set(f, 'Name', figName); 
+    set(f, 'Position', get(0, 'Screensize'));
+    a=0;
 end
 
 end

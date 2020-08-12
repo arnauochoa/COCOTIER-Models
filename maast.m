@@ -35,5 +35,3 @@ init_labels;     % some useful labels
 % launch GUI Control Panel
 cocogui;
 init_coco_gui;
-% maastgui;
-% init_gui;    % read algorithm .m files in directory and form menu (global)
