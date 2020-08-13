@@ -17,14 +17,24 @@
 % 2001 Sept
 % Stanford University WADGPS Lab
 
-clear all;
+% =========================================================================
+% Modified by Arnau Ochoa Bañuelos August 2020 for the COCOTIER project
+
+clear;
 close all;
+
+addpath(genpath('Data'));
+addpath(genpath('GUI'));
+addpath(genpath('Init'));
+addpath(genpath('Output'));
+addpath(genpath('SVM'));
+addpath(genpath('Tools'));
 
 init_const;      % global physical and gps constants
 init_col_labels; % column indices 
 init_mops;       % MOPS constants
-%init_hist;       % histogram parameters
+init_labels;     % some useful labels
 
 % launch GUI Control Panel
-maastgui;
-init_gui;    % read algorithm .m files in directory and form menu (global)
+cocogui;
+init_coco_gui;

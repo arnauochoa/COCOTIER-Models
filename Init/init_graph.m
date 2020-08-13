@@ -1,0 +1,123 @@
+function init_graph()
+
+
+%*************************************************************************
+%*     Copyright c 2007 The board of trustees of the Leland Stanford     *
+%*                      Junior University. All rights reserved.          *
+%*     This script file may be distributed and used freely, provided     *
+%*     this copyright notice is always kept with it.                     *
+%*                                                                       *
+%*     Questions and comments should be directed to Todd Walter at:      *
+%*     twalter@stanford.edu                                              *
+%*************************************************************************
+%
+
+% global GRAPH_AVAIL_FIGNO GRAPH_VPL_FIGNO GRAPH_HPL_FIGNO
+% global GRAPH_UDREMAP_FIGNO GRAPH_GIVEMAP_FIGNO
+% global GRAPH_UDREHIST_FIGNO GRAPH_GIVEHIST_FIGNO GRAPH_WRSMAP_FIGNO
+% global GRAPH_COV_AVAIL_FIGNO
+% global GRAPH_GIVEBIASMAP_FIGNO GRAPH_GIVESTDMAP_FIGNO
+global GRAPH_IONOBIASMAP_FIGNO GRAPH_IONOSTDMAP_FIGNO
+global GRAPH_IONOMEANENUMAP_FIGNO GRAPH_IONOSTDENUMAP_FIGNO
+global GRAPH_IONOHIST_FIGNO
+global GRAPH_CLKEPHBIASMAP_FIGNO GRAPH_CLKEPHSTDMAP_FIGNO
+global GRAPH_CLKEPHMEANENUMAP_FIGNO GRAPH_CLKEPHSTDENUMAP_FIGNO
+global GRAPH_CLKEPHHIST_FIGNO
+global GRAPH_TOTALMEANENUMAP_FIGNO GRAPH_TOTALSTDENUMAP_FIGNO
+global GRAPH_TOTALHIST_FIGNO
+global GRAPH_ECAC_IONO_HIST_FIGNO GRAPH_ECAC_CLKEPH_HIST_FIGNO GRAPH_ECAC_TOTAL_HIST_FIGNO
+
+global GRAPH_DARK_PURPLE GRAPH_LIGHT_PURPLE GRAPH_DARK_BLUE 
+global GRAPH_CYAN GRAPH_DARK_GREEN GRAPH_LIGHT_GREEN 
+global GRAPH_YELLOW GRAPH_ORANGE GRAPH_RED 
+
+global GRAPH_VPL_CONTOURS GRAPH_VPL_COLORS
+global GRAPH_HPL_CONTOURS GRAPH_HPL_COLORS
+global GRAPH_AVAIL_CONTOURS GRAPH_AVAIL_COLORS
+global GRAPH_UDREI_COLORS GRAPH_GIVEI_COLORS
+
+global GRAPH_LL_WORLD GRAPH_LL_STATE
+
+global MOPS_GIVEI_MAX MOPS_GIVEI_NM% used to define colormap
+
+
+% GRAPH_AVAIL_FIGNO    = 5;
+% GRAPH_VPL_FIGNO      = 6;
+% GRAPH_HPL_FIGNO      = 7;
+% GRAPH_UDREMAP_FIGNO  = 8;
+% GRAPH_GIVEMAP_FIGNO  = 9;
+% GRAPH_UDREHIST_FIGNO = 10;
+% GRAPH_GIVEHIST_FIGNO = 11;
+% GRAPH_WRSMAP_FIGNO = 12;
+% GRAPH_COV_AVAIL_FIGNO = 13;
+% GRAPH_GIVEBIASMAP_FIGNO = 14;
+% GRAPH_GIVESTDMAP_FIGNO = 15;
+GRAPH_IONOBIASMAP_FIGNO = 16:34; % IONO
+GRAPH_IONOSTDMAP_FIGNO = 35:53;
+GRAPH_IONOMEANENUMAP_FIGNO = 54:57;
+GRAPH_IONOSTDENUMAP_FIGNO = 58:61;
+GRAPH_IONOHIST_FIGNO = 62:76;
+GRAPH_CLKEPHBIASMAP_FIGNO = 72:95; % CLOCK+ EPH
+GRAPH_CLKEPHSTDMAP_FIGNO = 96:114;
+GRAPH_CLKEPHMEANENUMAP_FIGNO = 115:118;
+GRAPH_CLKEPHSTDENUMAP_FIGNO = 119:122;
+GRAPH_CLKEPHHIST_FIGNO = 123:137;
+GRAPH_TOTALMEANENUMAP_FIGNO = 138:141; % TOTAL
+GRAPH_TOTALSTDENUMAP_FIGNO = 142:145;
+GRAPH_TOTALHIST_FIGNO = 146:160;
+GRAPH_ECAC_IONO_HIST_FIGNO = 161:162; % ECAC CENTRAL REGION HISTOGRAMS
+GRAPH_ECAC_CLKEPH_HIST_FIGNO = 163:164;
+GRAPH_ECAC_TOTAL_HIST_FIGNO = 165:166;
+
+
+GRAPH_DEEP_PURPLE    = [1.0 0.0 1.0]*.25; 
+GRAPH_DARK_PURPLE    = [1.0 0.0 1.0]*.5; 
+GRAPH_LIGHT_PURPLE   = [1.0 0.0 1.0]*.75; 
+GRAPH_DARK_BLUE      = [0.0 0.0 1.0]*.6; 
+GRAPH_LIGHT_BLUE     = [0.1 0.1 1.0]; 
+GRAPH_CYAN           = [0.0 1.0 1.0]*.9; 
+GRAPH_AQUA           = [0.0 1.0 1.0]*.5;
+GRAPH_DARK_GREEN     = [0.0 1.0 0.0]*0.75;
+GRAPH_LIGHT_GREEN    = [0.1 1.0 0.1];
+GRAPH_LIME           = [0.5 1.0 0.0];
+GRAPH_YELLOW         = [1.0 1.0 0.0]*.95;
+GRAPH_MUSTARD        = [1.0 1.0 0.0]*.75;
+GRAPH_ORANGE         = [1.0 0.5 0.0];
+GRAPH_MAGENTA        = [1.0 0.0 0.5];
+GRAPH_RED            = [1.0 0.0 0.0];
+GRAPH_DARK_RED       = [1.0 0.0 0.0]*.6;
+
+%GRAPH_VPL_CONTOURS   = [0 5 10 12 15 20 30 40 50];
+GRAPH_VPL_CONTOURS   = [0 12 15 20 25 30 35 40 50];
+%GRAPH_VPL_CONTOURS    = [10 20 30 40 50 60 80 100 120];
+%GRAPH_VPL_CONTOURS    = [100 200 300 400 500 600 800 1000 1200];
+GRAPH_VPL_COLORS     = [[GRAPH_DARK_PURPLE];...
+                        [GRAPH_LIGHT_PURPLE];...
+                        [GRAPH_DARK_BLUE];...
+                        [GRAPH_CYAN];...
+                        [GRAPH_DARK_GREEN];...
+                        [GRAPH_LIGHT_GREEN];...
+                        [GRAPH_YELLOW];...
+                        [GRAPH_ORANGE];...
+                        [GRAPH_RED]];
+
+GRAPH_HPL_CONTOURS   = [0 20 40 60 80 100 150 250 556];
+GRAPH_HPL_COLORS     = GRAPH_VPL_COLORS;
+
+GRAPH_AVAIL_CONTOURS = [0 50 75 85 90 95 99 99.5 99.9]/100;
+GRAPH_AVAIL_COLORS   = flipud(GRAPH_VPL_COLORS);
+
+
+GRAPH_UDREI_COLORS   = colormap(jet(MOPS_GIVEI_MAX));
+GRAPH_UDREI_COLORS(MOPS_GIVEI_NM, :) = [0.23 0.23 0.23];
+
+GRAPH_GIVEI_COLORS   = GRAPH_UDREI_COLORS;
+
+
+%load usalo
+%load worldlo
+%[blat, blon]=extractm(POline);
+load mapdata
+
+GRAPH_LL_WORLD       = ll_world;
+GRAPH_LL_STATE       = ll_state;

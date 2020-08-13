@@ -1,3 +1,6 @@
 # ignore temp MATLAB files
 *.asv
+
+# ignore outputs
 outputs.mat
+outputs/
