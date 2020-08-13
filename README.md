@@ -61,7 +61,7 @@ This functions are the ones used to obtain the input data:
 
 ## Author
 
-[Arnau Ochoa Bañuelos](linkedin.com/in/arnauochoa)
+[Arnau Ochoa Bañuelos](https://www.linkedin.com/in/arnauochoa/)
 
 ## Acknowledgments
 * This project is possible thanks to the MAAST tool
