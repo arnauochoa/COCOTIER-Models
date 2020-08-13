@@ -54,10 +54,10 @@ The main functions are the following:
 The [MAAST User's Guide](http://web.stanford.edu/group/scpnt/gpslab/website_files/maast/userguide.pdf) and [MAAST Developer's Guide](http://web.stanford.edu/group/scpnt/gpslab/website_files/maast/MAAST_SDG_1_1.pdf) may also be helpful.
 
 This functions are the ones used to obtain the input data:
+> :warning: &nbsp; **These functions must be run in their respective projects.**
  * **[PlotsIonoResultsECAC](InputData/PlotsIonoResultsECAC.m):** Function used to obtain the input data for the ionospheric error. It must be placed in Quentin's project, ***IONO_Range_Error/CODE***.
  * **[obtainClockEphStats](InputData/obtainClockEphStats.m):** Function used to obtain the input data for the clock+ephemeris error. It must be placed in Quentin's project, ***Tango/UDRE_IGS 1***.
  * **[COMP_ORBCLK_SBAS_IGS_vUSRhist_2](InputData/COMP_ORBCLK_SBAS_IGS_vUSRhist_2.m):** Function called by *obtainClockEphStats*. It must be placed in Quentin's project, ***Tango/UDRE_IGS 1***.
-> :warning:   **These functions must be run in their respective projects.**
 
 ## Author
 
