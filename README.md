@@ -64,5 +64,5 @@ This functions are the ones used to obtain the input data:
 [Arnau Ochoa Bañuelos](https://www.linkedin.com/in/arnauochoa/)
 
 ## Acknowledgments
-* This project is possible thanks to the MAAST tool
+* This project is possible thanks to the [MAAST tool](https://gps.stanford.edu/resources/tools/maast).
 * This project has been tutored by Carl Milner and Christophe Macabiau.
