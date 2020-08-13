@@ -1,8 +1,16 @@
 function [IonoError, usrdata, usr2satdata] = compute_iono_error_nse(usrdata, usr2satdata, good_los)
-%COMPUTE_IONO_ERROR_NSE Computes the IONO ERROR statistics with the NSE
-%model
-%   This function computes the IONO ERROR statistics (bias and variance) with 
-% the NSE model from real data
+%COMPUTE_IONO_ERROR_NSE Computes the IONO ERROR statistics with the
+%   This function computes the IONOSPHERIC ERROR statistics (bias and 
+%   variance) with the NSE model from real data obtained from Quentin
+%   Tessier's project.
+%   
+%   DATA MATRICES:      - el_bin:           1xN+1.    Edges of elevation bins. N is num bins
+%                       - ECAC_Pos:         2xM.      Positions of IGS stations. M is num pos
+%                       - Result_MeanMat:   MxN.      Mean clock+eph range error.
+%                       - Result_StdMat:    MxN.      Mean clock+eph range error.
+%
+% =========================================================================
+% Created by Arnau Ochoa Bañuelos July 2020 for the COCOTIER project
 
 global IONO_NSE_RESULTSFILE IONO_NSE_STATIONSFILE
 global COL_U2S_UID COL_U2S_EL COL_U2S_BIASIONO COL_U2S_SIGIONO COL_U2S_SIG2IONO
@@ -10,7 +18,7 @@ global COL_USR_UID COL_USR_LL
 
 % Read data
 % Load files - TODO: generalize
-load(IONO_NSE_RESULTSFILE, 'Result_MeanMat', 'Result_SizeMat', 'Result_StdMat', 'el_bin');
+load(IONO_NSE_RESULTSFILE, 'Result_MeanMat', 'Result_StdMat', 'el_bin');
 load(IONO_NSE_STATIONSFILE, 'ECAC_pos');
 
 nUser = size(usrdata, 1);

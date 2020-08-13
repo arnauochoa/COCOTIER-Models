@@ -17,6 +17,9 @@
 % 2001 Sept
 % Stanford University WADGPS Lab
 
+% =========================================================================
+% Modified by Arnau Ochoa Bañuelos August 2020 for the COCOTIER project
+
 clear;
 close all;
 

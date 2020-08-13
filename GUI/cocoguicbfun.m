@@ -1,4 +1,4 @@
-function guicbfun(hndl)
+function cocoguicbfun(hndl)
 %*************************************************************************
 %*     Copyright c 2009 The board of trustees of the Leland Stanford     *
 %*                      Junior University. All rights reserved.          *
@@ -9,9 +9,8 @@ function guicbfun(hndl)
 %*     twalter@stanford.edu                                              *
 %*************************************************************************
 %
-% BUGS: screws up when you open another figure because figure handle is lost
-% hndl - handle of button pressed
-% Modified 
+% Modification of the original guicbfun.m from MAAST.
+% Author: Arnau Ochoa Bañuelos
 
 global GUI_GIVE_MENU
 global GUI_UDREGPS_ALGO GUI_UDREGEO_ALGO GUI_GIVE_ALGO GUI_IGPMASK_DAT ...
@@ -19,22 +18,14 @@ global GUI_UDREGPS_ALGO GUI_UDREGEO_ALGO GUI_GIVE_ALGO GUI_IGPMASK_DAT ...
         GUI_GALILEO_SV
 global GUI_UDREGPS_INIT GUI_UDREGEO_INIT GUI_GIVE_INIT  ...
          GUI_WRSCNMP_INIT GUI_USRCNMP_INIT 
-global GUI_WRS_DAT GUI_USR_DAT  GUI_GEOPOS_DAT 
-global GUI_UDREGPS_HNDL GUI_UDREGEO_HNDL GUI_GIVE_HNDL GUI_IGPMASK_HNDL ...
-        GUI_WRSCNMP_HNDL GUI_USRCNMP_HNDL ...
-        GUI_WRS_HNDL GUI_WRSPB_HNDL GUI_USR_HNDL GUI_SV_HNDL GUI_GEO_HNDL ...
-        GUI_OUT_HNDL GUI_GPS_HNDL GUI_GALILEO_HNDL
-global  GUI_PAMODE_HNDL GUI_HAL_HNDL GUI_VAL_HNDL
-global GUI_RUN_HNDL GUI_PLOT_HNDL GUI_SETTINGS_HNDL GUI_PERCENT_HNDL ...
-        GUI_UDRECONST_HNDL GUI_GEOCONST_HNDL GUI_GIVECONST_HNDL ...
+global GUI_WRS_DAT GUI_USR_DAT  
+global  GUI_OUT_HNDL 
+global GUI_RUN_HNDL GUI_PLOT_HNDL GUI_PERCENT_HNDL ...
+        GUI_GEOCONST_HNDL GUI_GIVECONST_HNDL ...
         GUI_LATSTEP_HNDL GUI_LONSTEP_HNDL GUI_WEEKNUM_HNDL GUI_TSTART_HNDL ...
         GUI_TEND_HNDL GUI_TSTEP_HNDL
 global UDREI_CONST GEOUDREI_CONST GIVEI_CONST;
-global SETTINGS_TR_HNDL SETTINGS_TR_DAT SETTINGS_CLOSE_HNDL SETTINGS_WIND_HNDL SETTINGS_FIRST
-global TRUTH_FLAG TRUTH_FILE SETTINGS_TR_FILE
-global SETTINGS_BR_HNDL SETTINGS_BR_FILE SETTINGS_BR_DAT
-global GUISET_RUN_HNDL BRAZPARAMS RTR_FLAG IPP_SPREAD_FLAG
-global MOPS_VAL MOPS_HAL MOPS_NPA_HAL
+global MOPS_VAL MOPS_HAL
 global IONO_NSE_RESULTSFILE IONO_NSE_STATIONSFILE
 global GIVE_MODE_DEFAULT GIVE_MODE_DUALFREQ GIVE_MODE_NSEMODEL
 

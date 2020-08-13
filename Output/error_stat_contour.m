@@ -1,13 +1,9 @@
 function error_stat_contour(ionoErrStat, usrdata, statType, titleText)
 % ERROR_STAT_CONTOUR: Plots residual error statistic as contour over map
 %
-% Inputs:
-%     
-%
-% 
-% $Revision: R2020a$ 
-% $Author: Arnau Ochoa Banuelos$
-% $Date: July 21, 2020$
+% =========================================================================
+% Created by Arnau Ochoa Bañuelos August 2020 for the COCOTIER project
+
 %---------------------------------------------------------
 
 global MOPS_SIG2_GIVE MOPS_GIVE MOPS_GIVEI_NM

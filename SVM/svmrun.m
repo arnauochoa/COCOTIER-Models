@@ -53,6 +53,10 @@ function svmrun(gpsudrefun, geoudrefun, givefun, usrcnmpfun,...
 % Clean up 2013 Aug 30 by Todd Walter
 %Modified by Todd Walter March 29, 2020 to add the capability to decode and
 %    use broadcast 250 bit messages in place of emulating the WMS
+% =========================================================================
+% Modified by Arnau Ochoa Bañuelos August 2020 for the COCOTIER project
+
+
 global COL_SAT_UDREI COL_SAT_DEGRAD COL_SAT_XYZ COL_SAT_MINMON
 global COL_IGP_GIVEI COL_IGP_MINMON COL_IGP_BETA COL_IGP_DEGRAD COL_IGP_CHI2RATIO
 global COL_USR_XYZ COL_USR_EHAT COL_USR_NHAT COL_USR_UHAT COL_USR_INBND ...

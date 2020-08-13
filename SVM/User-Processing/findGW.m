@@ -1,4 +1,9 @@
 function [G_usr, W_usr] = findGW(usr2satdata, usridx, sig2)
+% FINDGW Computes the G and W matrices
+%   This function computes the G matrix in ENU and the W matrix
+%
+% =========================================================================
+% Created by Arnau Ochoa Bañuelos August 2020 for the COCOTIER project
 
 global COL_U2S_EL COL_U2S_AZ COL_U2S_LOSENU
 

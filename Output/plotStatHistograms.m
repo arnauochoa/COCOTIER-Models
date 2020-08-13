@@ -1,8 +1,13 @@
 function [] = plotStatHistograms(userLL, error_mean_enub, error_sig_enub, errorType)
+%PLOTHISTOGRAMS Plots the histograms and Q-Q plots for the error mean and
+%sigma.
+%
+% =========================================================================
+% Created by Arnau Ochoa Bañuelos August 2020 for the COCOTIER project
 
 global OUTPUT_IONO_LABEL OUTPUT_CLKEPH_LABEL OUTPUT_TOTAL_LABEL
 global GRAPH_IONOHIST_FIGNO GRAPH_CLKEPHHIST_FIGNO GRAPH_TOTALHIST_FIGNO
-global GRAPH_ECAC_MEAN_HIST_FIGNO GRAPH_ECAC_STD_HIST_FIGNO
+global GRAPH_ECAC_IONO_HIST_FIGNO GRAPH_ECAC_CLKEPH_HIST_FIGNO GRAPH_ECAC_TOTAL_HIST_FIGNO
 global IONO_NSE_HISTOGRAMFILE CLKEPH_NSE_HISTOGRAMFILE TOTAL_NSE_HISTOGRAMFILE
 global ECAC_CENTRAL_AREA_FILE
 
@@ -10,13 +15,16 @@ switch errorType
     case OUTPUT_IONO_LABEL
         % Obtain positions used to plot the histograms
         pos = load(IONO_NSE_HISTOGRAMFILE);
-        figNo = GRAPH_IONOHIST_FIGNO;
+        figNum = GRAPH_IONOHIST_FIGNO;
+        ecacFigNum = GRAPH_ECAC_IONO_HIST_FIGNO;
     case OUTPUT_CLKEPH_LABEL
         pos = load(CLKEPH_NSE_HISTOGRAMFILE);
-        figNo = GRAPH_CLKEPHHIST_FIGNO;
+        figNum = GRAPH_CLKEPHHIST_FIGNO;
+        ecacFigNum = GRAPH_ECAC_CLKEPH_HIST_FIGNO;
     case OUTPUT_TOTAL_LABEL
         pos = load(TOTAL_NSE_HISTOGRAMFILE);
-        figNo = GRAPH_TOTALHIST_FIGNO;
+        figNum = GRAPH_TOTALHIST_FIGNO;
+        ecacFigNum = GRAPH_ECAC_TOTAL_HIST_FIGNO;
     otherwise
         error('Wrong input argument for errorType');
 end
@@ -41,7 +49,7 @@ for iPos = 1:nPos
     pos_error_std_enub = permute(error_sig_enub(posIdx(iPos), :, :), [3 2 1]);
     
     %% Histograms
-    S.f = figure(figNo(iPos));
+    S.f = figure(figNum(iPos));
     
     nSamples = size(pos_error_mean_enub, 1);
     
@@ -83,7 +91,7 @@ for iPos = 1:nPos
     
     %% 3D histograms
     % East
-    f = figure(figNo(iPos+nPos));
+    f = figure(figNum(iPos+nPos));
     
     for iDim = 1:nDim
         subplot(2,2,iDim);
@@ -104,7 +112,7 @@ for iPos = 1:nPos
     set(f, 'Position', get(0, 'Screensize'));
     
     %% Q-Q plot
-    f = figure(figNo(iPos + 2*nPos));
+    f = figure(figNum(iPos + 2*nPos));
 
     for iDim = 1:nDim
         % Mean histogram
@@ -117,6 +125,10 @@ for iPos = 1:nPos
         qqplot(pos_error_std_enub(:, iDim)); 
         title(['\sigma ' dimensions(iDim)]);
     end
+    titleTxt = {errorType; ...
+            sprintf('Q-Q plots \\mu_{ENUC} and \\sigma_{ENUC} at %d N, %d E', userPos); ...
+            sprintf('Size: %d', nSamples)};
+    sgtitle(titleTxt);
     figName = sprintf('%s Q-Q plots %d N, %d E', errorType, userPos);
     set(f, 'Name', figName); 
     set(f, 'Position', get(0, 'Screensize'));
@@ -140,7 +152,7 @@ end
 
 %% Histograms over all ECAC central region
 % Mean Histogram
-f = figure(GRAPH_ECAC_MEAN_HIST_FIGNO);
+f = figure(ecacFigNum(1));
 for iDim = 1:nDim
     subplot(2, 4, iDim);
     histogram(ecac_mean_enub(:, iDim)); 
@@ -149,12 +161,12 @@ for iDim = 1:nDim
     qqplot(ecac_mean_enub(:, iDim)); 
     title(''); %remove default title
 end
-sgtitle('Position error mean of all position inside ECAC central area')
-set(f, 'Name', 'Error MEAN histogram inside ECAC');
+sgtitle([errorType ' position error mean of all position inside ECAC central area'])
+set(f, 'Name', [errorType ' error MEAN histogram inside ECAC']);
 set(f, 'Position', get(0, 'Screensize'));
 
 % STD Histogram
-f = figure(GRAPH_ECAC_STD_HIST_FIGNO);
+f = figure(ecacFigNum(2));
 for iDim = 1:nDim
     subplot(2, 4, iDim);
     histogram(ecac_std_enub(:, iDim)); 
@@ -163,11 +175,9 @@ for iDim = 1:nDim
     qqplot(ecac_std_enub(:, iDim)); 
     title(''); %remove default title
 end
-sgtitle('Position error STD of all position inside ECAC central area')
-set(f, 'Name', 'Error STD histogram inside ECAC');
+sgtitle([errorType ' position error STD of all position inside ECAC central area'])
+set(f, 'Name', [errorType ' error STD histogram inside ECAC']);
 set(f, 'Position', get(0, 'Screensize'));
-
-
 
 end
 

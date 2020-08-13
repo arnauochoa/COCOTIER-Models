@@ -23,6 +23,8 @@ function [usr2satdata, usrdata, IonoError, ClockEphError] =                   ..
 %Modified by Todd Walter Sept. 4, 2013 to include MT27 & other constellations
 %Modified by Todd Walter Mar. 26, 2020 to change MT27 format and outputs now included in usr2satdata
 %Modified by Todd Walter Apr. 10, 2020 to include MOPS degradation terms
+% =========================================================================
+% Modified by Arnau Ochoa Bañuelos August 2020 for the COCOTIER project
 
 global MOPS_SIN_USRMASK 
 global COL_SAT_XYZ COL_USR_XYZ COL_USR_LL COL_SAT_UDREI ...
@@ -34,7 +36,6 @@ global COL_SAT_XYZ COL_USR_XYZ COL_USR_LL COL_SAT_UDREI ...
         COL_U2S_SIGCLKEPH COL_U2S_BIASTOTAL COL_U2S_SIGTOTAL
 global MOPS_SIG_UDRE MOPS_UDREI_NM MOPS_UDREI_DNU 
 global MOPS_MIN_GEOPRN MOPS_MAX_GEOPRN
-global GIVE_MODE_NSEMODEL
 
 nsat = size(satdata,1);
 nusr = size(usrdata,1);

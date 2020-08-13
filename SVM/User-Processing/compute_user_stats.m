@@ -1,11 +1,15 @@
-function [usrdata] = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata, mu, sig2)
-%COMPUTE_USER_STATS Computes the mean and covariance of the position error
+function [usrdata] = compute_user_stats(G_usr, W_usr, usrdata, usr2satdata)
+%COMPUTE_USER_STATS Computes the mean and STD of the position errors
 %for each user
+%
+% =========================================================================
+% Created by Arnau Ochoa Bañuelos July 2020 for the COCOTIER project
+
 
 global COL_U2S_UID COL_U2S_BIASIONO COL_U2S_SIG2IONO ...
         COL_U2S_BIASCLKEPH COL_U2S_SIGCLKEPH ...
         COL_U2S_BIASTOTAL COL_U2S_SIGTOTAL
-global COL_USR_UID COL_USR_LL COL_USR_BIASIONO_ENUB COL_USR_SIGIONO_ENUB ...
+global COL_USR_UID COL_USR_BIASIONO_ENUB COL_USR_SIGIONO_ENUB ...
         COL_USR_BIASCLKEPH_ENUB COL_USR_SIGCLKEPH_ENUB ...
         COL_USR_BIASTOTAL_ENUB COL_USR_SIGTOTAL_ENUB
 
