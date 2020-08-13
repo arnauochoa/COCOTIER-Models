@@ -3,6 +3,7 @@ function [] = init_nsemodel()
 
     global IONO_NSE_RESULTSFILE IONO_NSE_STATIONSFILE 
     global IONO_NSE_HISTOGRAMFILE CLKEPH_NSE_HISTOGRAMFILE TOTAL_NSE_HISTOGRAMFILE
+    global ECAC_CENTRAL_AREA_FILE
     
     IONO_NSE_RESULTSFILE = 'Allstations_IONO_results_full2014.mat';
     IONO_NSE_STATIONSFILE = 'ECAC_stations_position.mat';
@@ -11,5 +12,6 @@ function [] = init_nsemodel()
     CLKEPH_NSE_HISTOGRAMFILE = 'iono_histogram_positions.txt';
     TOTAL_NSE_HISTOGRAMFILE = 'iono_histogram_positions.txt';
     
+    ECAC_CENTRAL_AREA_FILE = 'ECAC_central_area.txt';
 end
 
