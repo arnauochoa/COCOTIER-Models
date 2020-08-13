@@ -5,15 +5,16 @@ MATLAB software to obtain the nominal SBAS error models for the COCOTIER project
 ## Description
 
 This software is a modification of the [MAAST tool](https://github.com/stanford-gps-lab/maast) v1.5.1 from Stanford.
+
 The following plots can be obtained with this software
-  * Maps of the **ionospheric** range error mean and STD for different elevation bins
-  * Maps of the **clock+ephemeris** range error mean and STD for different elevation bins
-  * Maps of the **ionospheric** position error mean and STD at a given percentile
-  * Maps of the **clock+ephemeris** position error mean and STD at a given percentile
-  * Maps of the **total** position error mean and STD at a given percentile
-  * Histograms and Q-Q plots of the **ionospheric** position error mean and STD
-  * Histograms and Q-Q plots of the **clock+ephemeris** position error mean and STD
-  * Histograms and Q-Q plots of the **total** position error mean and STD
+  * Maps of the **ionospheric** range error mean and STD for different elevation bins.
+  * Maps of the **clock+ephemeris** range error mean and STD for different elevation bins.
+  * Maps of the **ionospheric** position error mean and STD at a given percentile.
+  * Maps of the **clock+ephemeris** position error mean and STD at a given percentile.
+  * Maps of the **total** position error mean and STD at a given percentile.
+  * Histograms and Q-Q plots of the **ionospheric** position error mean and STD.
+  * Histograms and Q-Q plots of the **clock+ephemeris** position error mean and STD.
+  * Histograms and Q-Q plots of the **total** position error mean and STD.
 
 The input data has been obtained from a software developed by Quentin Tessier.
 
@@ -36,7 +37,7 @@ The input data has been obtained from a software developed by Quentin Tessier.
   * For the Ionospheric error: [iono_histogram_positions.txt](Data/NSE/iono_histogram_positions.txt)
   * For the Clock+ephemeris error: [clockeph_histogram_positions.txt](Data/NSE/clockeph_histogram_positions.txt)
   * For the Total error: [total_histogram_positions.txt](Data/NSE/total_histogram_positions.txt)
-* To change the central ECAC area, edit the vertices of the area in [ECAC_central_area.txt](DATA/NSE/ECAC_central_area.txt)
+* To change the central ECAC area, edit the vertices of the area in [ECAC_central_area.txt](Data/NSE/ECAC_central_area.txt)
 
 ## Help for future development
 
